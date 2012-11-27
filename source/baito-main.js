@@ -19,7 +19,7 @@ enyo.kind({
         ]}
       ]},
     ]},
-    {name: "mapContainer", fit: true, kind: "FittableRows", classes: "enyo-fit", style: "background: black;", components: [
+    {name: "mapContainer", fit: true, classes: "enyo-fit", style: "background: black;", components: [
       {name: "mapview", tag: "div", classes: "enyo-fit"}
     ]}
   ],
@@ -29,12 +29,6 @@ enyo.kind({
       var req = new enyo.Ajax({url: "http://baito-dev.co.uk/api/search"});
       req.response(enyo.bind(this, "processSearchResults"));
       req.go({searchTerm: searchText,limit: 100});
-
-      var latLng = new google.maps.LatLng("53.7974185", "-1.5437941000000137");
-      this.map = new google.maps.Map(document.getElementById("app_mapview"), { 
-        mapTypeId: google.maps.MapTypeId.ROADMAP, 
-        center: latLng 
-      });
     } else {
       this.$.searchInput.setValue(searchText);
     }
@@ -43,6 +37,7 @@ enyo.kind({
     this.results = inResponse.SearchResultsResponse.results;
     this.$.resultList.setCount(this.results.length);
     this.$.resultList.reset();
+    this.centerMap(inResponse);
   },
   setupItem: function(inSender, inEvent) {
     var i = inEvent.index;
@@ -53,5 +48,52 @@ enyo.kind({
   openJobItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
     console.log(item);
+  },
+  centerMap: function(data) {
+    if (!data.SearchResultsResponse) {
+      console.log("Not expected response");
+      return;
+    }
+    
+    var response = data.SearchResultsResponse;
+    var mapLatLng = new google.maps.LatLng(response.searchLocation.latitude, response.searchLocation.longitude);
+    if (!this.map) {
+      if (this.$.mapview.hasNode()) {
+           this.map = new google.maps.Map(this.$.mapview.node, {
+               mapTypeId: google.maps.MapTypeId.ROADMAP, 
+               center: mapLatLng,
+               streetViewControl: true
+           });
+      }
+    } else {
+      this.map.panTo(mapLatLng);
+    }
+
+    var currentMap = this.map;
+    var bounds = new google.maps.LatLngBounds();
+    if (response.count > 0) {
+      var results = response.results;
+      var infowindow = new google.maps.InfoWindow();
+    
+     results.forEach(function(r) {
+        var summary = r.job.JobSummary;
+        var fromUrl = "http://baito-dev.co.uk";
+        var linkString = "<a href='/viewjob.html?jobid=" + summary.uuid + "&fromUrl=" + fromUrl + "'>" + summary.title + "</a>";
+        var point = new google.maps.LatLng(summary.location.latitude, summary.location.longitude)
+        var marker = new google.maps.Marker({
+          position: point,
+          title: summary.title,
+          visible: true,
+          map: currentMap
+        });
+    
+        bounds.extend(point);
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.content = linkString;
+          infowindow.open(currentMap, marker);
+        });
+      });
+      this.map.fitBounds(bounds);
+    }
   }
 });

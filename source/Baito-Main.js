@@ -1,5 +1,5 @@
 enyo.kind({
-  name: "Baito.Main",
+  name: "App",
   kind: "FittableRows", 
   classes: "enyo-fit", 
   components: [

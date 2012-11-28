@@ -21,9 +21,9 @@ enyo.kind({
       ]},
     ]},
     {kind: "FittableColumns", fit: true, components: [
-      {name: "resultList", kind: "List", style: "width: 30%", touch: true, onSetupItem: "setupItem", components: [
+      {name: "resultList", kind: "List", classes: "search-result-list", touch: true, onSetupItem: "setupItem", components: [
         {classes: "search-result-entry", ontap: "openJobItem", tag: "div", components: [
-          {name: "distance", tag: "span"},
+          {name: "distance", tag: "span", style: "width: 50px"},
           {name: "jobTitle", tag: "span"}
         ]}
       ]},
@@ -36,7 +36,7 @@ enyo.kind({
     if (searchText !== "") {
       var req = new enyo.Ajax({url: "http://baito-dev.co.uk/api/search"});
       req.response(enyo.bind(this, "processSearchResults"));
-      req.go({searchTerm: searchText,limit: 100});
+      req.go({searchTerm: searchText,limit: 25});
     } else {
       this.$.searchInput.setValue(searchText);
     }
@@ -70,7 +70,6 @@ enyo.kind({
            this.map = new google.maps.Map(this.$.mapview.node, {
                mapTypeId: google.maps.MapTypeId.ROADMAP, 
                center: mapLatLng,
-               zoom: 8,
                streetViewControl: true
            });
            console.log(this.map);

@@ -27,9 +27,7 @@ enyo.kind({
           {name: "jobTitle", tag: "span"}
         ]}
       ]},
-      {name: "mapContainer", style: "background: black;", fit:true, components: [
-        {name: "mapview", tag: "div"}
-      ]},
+      {name: "mapview", tag: "div", fit: true}
     ]},
   ],
   search: function(inSender, inEvent) {
@@ -72,40 +70,40 @@ enyo.kind({
            this.map = new google.maps.Map(this.$.mapview.node, {
                mapTypeId: google.maps.MapTypeId.ROADMAP, 
                center: mapLatLng,
+               zoom: 8,
                streetViewControl: true
            });
-           console.log("created new map");
+           console.log(this.map);
       }
     } else {
       this.map.panTo(mapLatLng);
     }
 
     var currentMap = this.map;
-    var bounds = new google.maps.LatLngBounds();
-    if (response.count > 0) {
-      var results = response.results;
-      var infowindow = new google.maps.InfoWindow();
-    
-     results.forEach(function(r) {
-        var summary = r.job.JobSummary;
-        var fromUrl = "http://baito-dev.co.uk";
-        var linkString = "<a href='/viewjob.html?jobid=" + summary.uuid + "&fromUrl=" + fromUrl + "'>" + summary.title + "</a>";
-        var point = new google.maps.LatLng(summary.location.latitude, summary.location.longitude)
-        var marker = new google.maps.Marker({
-          position: point,
-          title: summary.title,
-          visible: true,
-          map: currentMap
-        });
-    
-        bounds.extend(point);
-        google.maps.event.addListener(marker, 'click', function() {
-          infowindow.content = linkString;
-          infowindow.open(currentMap, marker);
-        });
-      });
-      this.map.fitBounds(bounds);
-      
-    }
+     var bounds = new google.maps.LatLngBounds();
+     if (response.count > 0) {
+       var results = response.results;
+       var infowindow = new google.maps.InfoWindow();
+     
+      results.forEach(function(r) {
+         var summary = r.job.JobSummary;
+         var fromUrl = "http://baito-dev.co.uk";
+         var linkString = "<a href='/viewjob.html?jobid=" + summary.uuid + "&fromUrl=" + fromUrl + "'>" + summary.title + "</a>";
+         var point = new google.maps.LatLng(summary.location.latitude, summary.location.longitude)
+         var marker = new google.maps.Marker({
+           position: point,
+           title: summary.title,
+           visible: true,
+           map: currentMap
+         });
+     
+         bounds.extend(point);
+         google.maps.event.addListener(marker, 'click', function() {
+           infowindow.content = linkString;
+           infowindow.open(currentMap, marker);
+         });
+       });
+       this.map.fitBounds(bounds);
+     }
   }
 });

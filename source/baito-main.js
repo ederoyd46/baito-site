@@ -1,12 +1,12 @@
 enyo.kind({
   name: "App",
+  kind: "FittableRows",
   classes: "enyo-fit",
-  layoutKind: "FittableRowsLayout",
   components: [
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", components: [
       {kind: "onyx.Button", content: "Go", ontap: "search"},
       {kind: "onyx.InputDecorator", components: [
-        {kind: "onyx.Input", name: "searchInput", classes: "search-input", placeholder: "search for jobs in..."}
+        {kind: "onyx.Input", name: "searchInput", value: "Leeds", classes: "search-input", placeholder: "search for jobs in..."}
       ]},
       { fit: true },
       {kind: "onyx.MenuDecorator", classes: "action-menu", name: "actionMenu", components: [
@@ -20,22 +20,20 @@ enyo.kind({
           ]}
       ]},
     ]},
-    {layoutKind: "FittableColumnsLayout", components: [
-      {name: "resultList", kind: "List", touch: true, onSetupItem: "setupItem", components: [
-        {classes: "search-result-entry", ontap: "openJobItem", components: [
+    {kind: "FittableColumns", fit: true, components: [
+      {name: "resultList", kind: "List", style: "width: 30%", touch: true, onSetupItem: "setupItem", components: [
+        {classes: "search-result-entry", ontap: "openJobItem", tag: "div", components: [
           {name: "distance", tag: "span"},
           {name: "jobTitle", tag: "span"}
         ]}
       ]},
-      {name: "mapContainer", style: "background: black;", components: [
+      {name: "mapContainer", style: "background: black;", fit:true, components: [
         {name: "mapview", tag: "div"}
       ]},
-      {name: "detailContainer", style: "background: yellow;", components: [
-        {name: "detailView", tag: "div"}
-      ]}
-    ]}
+    ]},
   ],
   search: function(inSender, inEvent) {
+    console.log("searching");
     var searchText = this.$.searchInput.getValue().replace(/^\s+|\s+$/g, '');
     if (searchText !== "") {
       var req = new enyo.Ajax({url: "http://baito-dev.co.uk/api/search"});
@@ -76,6 +74,7 @@ enyo.kind({
                center: mapLatLng,
                streetViewControl: true
            });
+           console.log("created new map");
       }
     } else {
       this.map.panTo(mapLatLng);
@@ -106,6 +105,7 @@ enyo.kind({
         });
       });
       this.map.fitBounds(bounds);
+      
     }
   }
 });

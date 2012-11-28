@@ -1,26 +1,38 @@
 enyo.kind({
   name: "App",
-  kind: "Panels", 
-  classes: "enyo-fit", 
-  arrangerKind: "CollapsingArranger",
+  classes: "enyo-fit",
+  layoutKind: "FittableRowsLayout",
   components: [
-    {layoutKind: "FittableRowsLayout", components: [
-      {kind: "onyx.Toolbar", components: [
-        {content: "Search for Jobs"},
-        {kind: "onyx.Button", content: "Go", ontap: "search"},
-        {kind: "onyx.InputDecorator", components: [
-          {kind: "onyx.Input", name: "searchInput"}
-        ]}
+    {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", components: [
+      {kind: "onyx.Button", content: "Go", ontap: "search"},
+      {kind: "onyx.InputDecorator", components: [
+        {kind: "onyx.Input", name: "searchInput", classes: "search-input", placeholder: "search for jobs in..."}
       ]},
-      {name: "resultList", kind: "List", fit: true, touch: true, onSetupItem: "setupItem", components: [
-        {style: "padding: 10px;", ontap: "openJobItem", components: [
+      { fit: true },
+      {kind: "onyx.MenuDecorator", classes: "action-menu", name: "actionMenu", components: [
+          {content: "Actions"},
+          {kind: "onyx.Menu", components: [
+              {content: "Login"},
+              {content: "Login via Facebook"},
+              {content: "My Account"},
+              {classes: "onyx-menu-divider"},
+              {content: "Logout"},
+          ]}
+      ]},
+    ]},
+    {layoutKind: "FittableColumnsLayout", components: [
+      {name: "resultList", kind: "List", touch: true, onSetupItem: "setupItem", components: [
+        {classes: "search-result-entry", ontap: "openJobItem", components: [
           {name: "distance", tag: "span"},
           {name: "jobTitle", tag: "span"}
         ]}
       ]},
-    ]},
-    {name: "mapContainer", fit: true, classes: "enyo-fit", style: "background: black;", components: [
-      {name: "mapview", tag: "div", classes: "enyo-fit"}
+      {name: "mapContainer", style: "background: black;", components: [
+        {name: "mapview", tag: "div"}
+      ]},
+      {name: "detailContainer", style: "background: yellow;", components: [
+        {name: "detailView", tag: "div"}
+      ]}
     ]}
   ],
   search: function(inSender, inEvent) {

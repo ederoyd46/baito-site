@@ -1,0 +1,12 @@
+.action-menu {
+  float: right;
+}
+
+.search-input {
+
+}
+
+.search-result-entry {
+  padding: 10px;
+  border: 1px solid black;
+}

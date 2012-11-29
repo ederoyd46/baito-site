@@ -23,11 +23,16 @@ enyo.kind({
     {kind: "FittableColumns", fit: true, components: [
       {name: "resultList", kind: "List", classes: "search-result-list", touch: true, onSetupItem: "setupItem", components: [
         {classes: "search-result-entry", ontap: "openJobItem", tag: "div", components: [
-          {name: "distance", tag: "span", style: "width: 50px"},
-          {name: "jobTitle", tag: "span"}
+          {name: "jobTitle", tag: "span"},
+          {content: " (", tag: "span"},
+          {name: "distance", tag: "span"},
+          {content: " miles away)", tag: "span"}
         ]}
       ]},
-      {name: "mapview", tag: "div", fit: true}
+      {name: "mapContainer", tag: "div", fit: true, components: [
+        {name: "mapview", tag: "div", classes: "map-view"}
+      ]}
+      
     ]},
   ],
   search: function(inSender, inEvent) {

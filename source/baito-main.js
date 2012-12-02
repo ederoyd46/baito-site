@@ -29,10 +29,14 @@ enyo.kind({
           {content: " miles away)", tag: "span"}
         ]}
       ]},
-      {name: "mapContainer", tag: "div", fit: true, components: [
-        {name: "mapview", tag: "div", classes: "map-view"}
+      {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [
+        {name: "mapContainer", tag: "div", components: [
+          {name: "mapview", tag: "div", classes: "map-view"}
+        ]},
+        {name: "jobContainer", tag: "div", components: [
+          {name: "jobview", tag: "div", classes: "map-view"}
+        ]}
       ]}
-      
     ]},
   ],
   search: function(inSender, inEvent) {
@@ -60,7 +64,21 @@ enyo.kind({
   },
   openJobItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
-    console.log(item);
+    jobId = item.job.JobSummary.uuid;
+    var req = new enyo.Ajax({url: "http://baito-dev.co.uk/api/job/view"});
+    req.response(enyo.bind(this, "processViewJob"));
+    req.go({jobid: jobId});
+    
+    // if (this.$.contentPanels.getActive().name == "mapContainer") {
+    //   this.$.contentPanels.setIndex(1);
+    // } else {
+    //   this.$.contentPanels.setIndex(0);
+    // }
+  },
+  processViewJob: function(inRequest, inResponse) {
+    console.log(inResponse);
+    this.$.contentPanels.setIndex(1);
+    
   },
   centerMap: function(data) {
     if (!data.SearchResultsResponse) {

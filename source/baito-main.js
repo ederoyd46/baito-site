@@ -34,7 +34,7 @@ enyo.kind({
           {name: "mapview", tag: "div", classes: "map-view"}
         ]},
         {name: "jobContainer", tag: "div", components: [
-          {name: "job", kind: "JobDetails"}
+          {name: "jobview", kind: "JobDetails"}
         ]}
       ]}
     ]},
@@ -65,20 +65,15 @@ enyo.kind({
   openJobItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
     jobId = item.job.JobSummary.uuid;
-    var req = new enyo.Ajax({url: "http://baito-dev.co.uk/api/job/view"});
-    req.response(enyo.bind(this, "processViewJob"));
-    req.go({jobid: jobId});
-    
+    this.$.jobview.setJobId(jobId);
+    this.$.jobview.loadJob();
+    console.log(this.$.jobview);
+    this.$.contentPanels.setIndex(1);
     // if (this.$.contentPanels.getActive().name == "mapContainer") {
     //   this.$.contentPanels.setIndex(1);
     // } else {
     //   this.$.contentPanels.setIndex(0);
     // }
-  },
-  processViewJob: function(inRequest, inResponse) {
-    console.log(inResponse);
-    this.$.contentPanels.setIndex(1);
-    
   },
   centerMap: function(data) {
     if (!data.SearchResultsResponse) {

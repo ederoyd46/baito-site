@@ -58,6 +58,7 @@ enyo.kind({
     this.inherited(arguments);
   },
   loadJob: function() {
+    console.log("loadJob called");
     var req = new enyo.Ajax({url: "http://baito-dev.co.uk/api/job/view"});
     req.response(enyo.bind(this, "processLoadedJob"));
     req.go({jobid: this.jobId});

@@ -34,7 +34,7 @@ enyo.kind({
           {name: "mapview", tag: "div", classes: "map-view"}
         ]},
         {name: "jobContainer", tag: "div", components: [
-          {name: "jobview", tag: "div", classes: "map-view"}
+          {name: "job", kind: "JobDetails"}
         ]}
       ]}
     ]},

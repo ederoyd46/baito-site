@@ -43,14 +43,15 @@ enyo.kind({
     console.log("searching");
     var searchText = this.$.searchInput.getValue().replace(/^\s+|\s+$/g, '');
     if (searchText !== "") {
-      var req = new enyo.Ajax({url: "http://baito-dev.co.uk/api/search"});
+      var req = new enyo.Ajax({url: "/api/search"});
       req.response(enyo.bind(this, "processSearchResults"));
-      req.go({searchTerm: searchText,limit: 25});
+      req.go({searchTerm: searchText,limit: 50});
     } else {
       this.$.searchInput.setValue(searchText);
     }
   },
   processSearchResults: function(inRequest, inResponse) {
+    this.$.contentPanels.setIndex(0);
     this.results = inResponse.SearchResultsResponse.results;
     this.$.resultList.setCount(this.results.length);
     this.$.resultList.reset();
@@ -69,11 +70,6 @@ enyo.kind({
     this.$.jobview.loadJob();
     console.log(this.$.jobview);
     this.$.contentPanels.setIndex(1);
-    // if (this.$.contentPanels.getActive().name == "mapContainer") {
-    //   this.$.contentPanels.setIndex(1);
-    // } else {
-    //   this.$.contentPanels.setIndex(0);
-    // }
   },
   centerMap: function(data) {
     if (!data.SearchResultsResponse) {
@@ -104,7 +100,7 @@ enyo.kind({
      
       results.forEach(function(r) {
          var summary = r.job.JobSummary;
-         var fromUrl = "http://baito-dev.co.uk";
+         var fromUrl = "http://baito.co.uk";
          var linkString = "<a href='/viewjob.html?jobid=" + summary.uuid + "&fromUrl=" + fromUrl + "'>" + summary.title + "</a>";
          var point = new google.maps.LatLng(summary.location.latitude, summary.location.longitude)
          var marker = new google.maps.Marker({

@@ -3,5 +3,6 @@ enyo.depends(
 	"$lib/onyx",
 	"baito-main.js",
   "baito-main.css",
-  "test.js"
+  "baito-components.js",
+  "baito-components.css"
 );

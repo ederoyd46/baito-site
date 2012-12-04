@@ -97,6 +97,8 @@ enyo.kind({
 enyo.kind({
   name: "MapView",
   kind: "Control",
+  map: null,
+  markerCreated: [],
   published: {
       mapData: "",
   },
@@ -113,7 +115,7 @@ enyo.kind({
   },
   destroy: function() {
     this.inherited(arguments);
-  },
+  },  
   centerMap: function() {
     var data = this.mapData;
 
@@ -121,46 +123,47 @@ enyo.kind({
       console.log("Not expected response");
       return;
     }
-    
+
     var response = data.SearchResultsResponse;
     var mapLatLng = new google.maps.LatLng(response.searchLocation.latitude, response.searchLocation.longitude);
     if (!this.map) {
       if (this.$.mapview.hasNode()) {
-           this.map = new google.maps.Map(this.$.mapview.node, {
-               mapTypeId: google.maps.MapTypeId.ROADMAP, 
-               center: mapLatLng,
-               streetViewControl: true
-           });
+        this.map = new google.maps.Map(this.$.mapview.node, {
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          center: mapLatLng,
+          streetViewControl: true
+        });
       }
     } else {
       this.map.panTo(mapLatLng);
     }
-
-    var currentMap = this.map;
-     var bounds = new google.maps.LatLngBounds();
-     if (response.count > 0) {
-       var results = response.results;
-       var infowindow = new google.maps.InfoWindow();
-     
-      results.forEach(function(r) {
-         var summary = r.job.JobSummary;
-         var fromUrl = "http://baito.co.uk";
-         var linkString = "<a href='/viewjob.html?jobid=" + summary.uuid + "&fromUrl=" + fromUrl + "'>" + summary.title + "</a>";
-         var point = new google.maps.LatLng(summary.location.latitude, summary.location.longitude)
-         var marker = new google.maps.Marker({
-           position: point,
-           title: summary.title,
-           visible: true,
-           map: currentMap
-         });
-     
-         bounds.extend(point);
-         google.maps.event.addListener(marker, 'click', function() {
-           infowindow.content = linkString;
-           infowindow.open(currentMap, marker);
-         });
-       });
-       this.map.fitBounds(bounds);
-     }
-  }  
+    var bounds = new google.maps.LatLngBounds();
+      
+    var results = response.results;
+    var map = this.map;
+    var markerCreated = this.markerCreated;
+    var infowindow = new google.maps.InfoWindow({content: "", size: new google.maps.Size(50,50)});
+    results.forEach(function(r) {
+      var summary = r.job.JobSummary;
+      var point = new google.maps.LatLng(summary.location.latitude, summary.location.longitude);
+      bounds.extend(point);
+      if (markerCreated.indexOf(summary.uuid) == -1) {
+        var marker = new google.maps.Marker({
+          position: point,
+          title: summary.title,
+          visible: true,
+          map: map
+        });
+          
+        markerCreated.push(summary.uuid);
+        google.maps.event.addListener(marker, 'click', function(event) {
+          map.panTo(event.latLng);
+          map.setZoom(20);
+          infowindow.content = summary.title;
+          infowindow.open(map, marker);
+        });
+      }
+    });
+    this.map.fitBounds(bounds);
+  }
 });

@@ -157,8 +157,6 @@ enyo.kind({
           
         markerCreated.push(summary.uuid);
         google.maps.event.addListener(marker, 'click', function(event) {
-          map.panTo(event.latLng);
-          map.setZoom(20);
           infowindow.content = summary.title;
           infowindow.open(map, marker);
         });

@@ -30,9 +30,7 @@ enyo.kind({
         ]}
       ]},
       {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [
-        {name: "mapContainer", tag: "div", components: [
-          {name: "mapview", tag: "div", classes: "map-view"}
-        ]},
+        {name: "mapContainer", kind: "MapView"},
         {name: "jobContainer", tag: "div", components: [
           {name: "jobview", kind: "JobDetails"}
         ]}
@@ -55,7 +53,8 @@ enyo.kind({
     this.results = inResponse.SearchResultsResponse.results;
     this.$.resultList.setCount(this.results.length);
     this.$.resultList.reset();
-    this.centerMap(inResponse);
+    this.$.mapContainer.setMapData(inResponse);
+    this.$.mapContainer.centerMap();
   },
   setupItem: function(inSender, inEvent) {
     var i = inEvent.index;
@@ -70,53 +69,6 @@ enyo.kind({
     this.$.jobview.loadJob();
     console.log(this.$.jobview);
     this.$.contentPanels.setIndex(1);
-  },
-  centerMap: function(data) {
-    if (!data.SearchResultsResponse) {
-      console.log("Not expected response");
-      return;
-    }
-    
-    var response = data.SearchResultsResponse;
-    var mapLatLng = new google.maps.LatLng(response.searchLocation.latitude, response.searchLocation.longitude);
-    if (!this.map) {
-      if (this.$.mapview.hasNode()) {
-           this.map = new google.maps.Map(this.$.mapview.node, {
-               mapTypeId: google.maps.MapTypeId.ROADMAP, 
-               center: mapLatLng,
-               streetViewControl: true
-           });
-           console.log(this.map);
-      }
-    } else {
-      this.map.panTo(mapLatLng);
-    }
-
-    var currentMap = this.map;
-     var bounds = new google.maps.LatLngBounds();
-     if (response.count > 0) {
-       var results = response.results;
-       var infowindow = new google.maps.InfoWindow();
-     
-      results.forEach(function(r) {
-         var summary = r.job.JobSummary;
-         var fromUrl = "http://baito.co.uk";
-         var linkString = "<a href='/viewjob.html?jobid=" + summary.uuid + "&fromUrl=" + fromUrl + "'>" + summary.title + "</a>";
-         var point = new google.maps.LatLng(summary.location.latitude, summary.location.longitude)
-         var marker = new google.maps.Marker({
-           position: point,
-           title: summary.title,
-           visible: true,
-           map: currentMap
-         });
-     
-         bounds.extend(point);
-         google.maps.event.addListener(marker, 'click', function() {
-           infowindow.content = linkString;
-           infowindow.open(currentMap, marker);
-         });
-       });
-       this.map.fitBounds(bounds);
-     }
   }
+
 });

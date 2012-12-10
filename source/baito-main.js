@@ -31,7 +31,7 @@ enyo.kind({
       ]},
       {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [
         {name: "mapContainer", kind: "MapView"},
-        {name: "jobContainer", tag: "div", components: [
+        {name: "jobContainer", kind: "Scroller", touch: true, components: [
           {name: "jobview", kind: "JobDetails"}
         ]}
       ]}

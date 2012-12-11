@@ -91,26 +91,27 @@ enyo.kind({
   }
 });
 
-
 enyo.kind({
   name: "SearchList",
-  kind: "Control",
+  kind: "List",
   events: {
     onJobClicked: "",
     onSearchCompleted: ""
   },
   published: {
     lastSearchResponse: "",
+    results: [],
+  },
+  handlers: {
+    onScroll: "scrolling",
+    onSetupItem: "setupItem",    
   },
   searchText: "",
-  results: [],
   searchInProgress: false,  
   components: [
-    {name: "resultList", kind: "List", touch: true, onSetupItem: "setupItem", onScroll: "scrolling", components: [
-      {classes: "search-result-entry", ontap: "itemClicked", tag: "div", components: [
-        {name: "jobTitle", tag: "span"}
-      ]}
-    ]},
+    {classes: "search-result-entry", ontap: "itemClicked", tag: "div", components: [
+      {name: "jobTitle", tag: "span"}
+    ]}
   ],
   create: function() {
     this.inherited(arguments);
@@ -136,8 +137,8 @@ enyo.kind({
   processSearchResults: function(inRequest, inResponse) {
     this.lastSearchResponse = inResponse;
     this.results = inResponse.SearchResultsResponse.results;
-    this.$.resultList.setCount(this.results.length);
-    this.$.resultList.reset();
+    this.setCount(this.results.length);
+    this.reset();
     this.searchInProgress = false;
     this.doSearchCompleted();
   },
@@ -154,8 +155,8 @@ enyo.kind({
   processAdditionSearchResults: function(inRequest, inResponse) {
     this.lastSearchResponse = inResponse;
     this.results.push.apply(this.results,inResponse.SearchResultsResponse.results);
-    this.$.resultList.setCount(this.results.length);
-    this.$.resultList.refresh();
+    this.setCount(this.results.length);
+    this.refresh();
     this.searchInProgress = false;
     this.doSearchCompleted();
   },
@@ -164,10 +165,9 @@ enyo.kind({
     if (boundary && boundary != 0) {
       var y = inEvent.originator.y;
       var percentage = (Math.round(y) / Math.round(boundary))*100;
-      console.log("Boundary: " + boundary + " Current: " + y + " remainder: " + (Math.round(boundary) - Math.round(y)) + " Percent: " + ((Math.round(y) / Math.round(boundary))*100));
+      // console.log("Boundary: " + boundary + " Current: " + y + " remainder: " + (Math.round(boundary) - Math.round(y)) + " Percent: " + ((Math.round(y) / Math.round(boundary))*100));
       
       if (percentage > 95) {
-        console.log("Fire search");
         this.additionSearch(this.searchText);
       }
     }

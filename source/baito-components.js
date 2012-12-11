@@ -107,7 +107,8 @@ enyo.kind({
     onSetupItem: "setupItem",    
   },
   searchText: "",
-  searchInProgress: false,  
+  searchInProgress: false,
+  endOfResults: false,
   components: [
     {classes: "search-result-entry", ontap: "itemClicked", tag: "div", components: [
       {name: "jobTitle", tag: "span"}
@@ -120,9 +121,7 @@ enyo.kind({
     this.inherited(arguments);
   },
   search: function(rawSearchText) {
-    if (this.searchInProgress) {
-      return;
-    }
+    this.resetSearch();
     this.searchInProgress = true;
     var searchText = rawSearchText.replace(/^\s+|\s+$/g, '');
     if (searchText !== "") {
@@ -143,7 +142,8 @@ enyo.kind({
     this.doSearchCompleted();
   },
   additionSearch: function(searchText) {
-    if (this.searchInProgress) {
+    if (this.searchInProgress || this.endOfResults) {
+      console.log("searchInProgress: " + this.searchInProgress + " endOfResults: " + this.endOfResults);
       return;
     }
     
@@ -154,6 +154,12 @@ enyo.kind({
   },
   processAdditionSearchResults: function(inRequest, inResponse) {
     this.lastSearchResponse = inResponse;
+    var resultCount = inResponse.SearchResultsResponse.results.length;
+    if (resultCount == 0) {
+      this.endOfResults = true;
+      return;
+    }
+    
     this.results.push.apply(this.results,inResponse.SearchResultsResponse.results);
     this.setCount(this.results.length);
     this.refresh();
@@ -181,6 +187,12 @@ enyo.kind({
   itemClicked: function(inSender, inEvent) {
     var i = inEvent.index;
     this.doJobClicked({index: i});
+  },
+  resetSearch: function() {
+    this.searchInProgress = false;
+    this.results = [];
+    this.endOfResults = false;
+    this.searchResults = "";
   }
 });
 

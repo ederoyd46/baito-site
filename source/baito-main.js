@@ -32,12 +32,6 @@ enyo.kind({
   ],
   search: function(inSender, inEvent) {
     this.$.resultList.search(this.$.searchInput.getValue());
-    // this.$.searchInput.getValue();
-    // this.$.contentPanels.setIndex(0);
-    
-    // this.$.mapContainer.setMapData(inResponse);
-    //     this.$.mapContainer.centerMap();
-    //     
   },
   loadMaps: function(inSender, inEvent) {
     var response = this.$.resultList.lastSearchResponse;

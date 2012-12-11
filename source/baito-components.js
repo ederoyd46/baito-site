@@ -92,7 +92,97 @@ enyo.kind({
 });
 
 
-
+enyo.kind({
+  name: "SearchList",
+  kind: "Control",
+  events: {
+    onJobClicked: "",
+    onSearchCompleted: ""
+  },
+  published: {
+    lastSearchResponse: "",
+  },
+  searchText: "",
+  results: [],
+  searchInProgress: false,  
+  components: [
+    {name: "resultList", kind: "List", touch: true, onSetupItem: "setupItem", onScroll: "scrolling", components: [
+      {classes: "search-result-entry", ontap: "itemClicked", tag: "div", components: [
+        {name: "jobTitle", tag: "span"}
+      ]}
+    ]},
+  ],
+  create: function() {
+    this.inherited(arguments);
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  search: function(rawSearchText) {
+    if (this.searchInProgress) {
+      return;
+    }
+    this.searchInProgress = true;
+    var searchText = rawSearchText.replace(/^\s+|\s+$/g, '');
+    if (searchText !== "") {
+      this.searchText = searchText;
+      var req = new enyo.Ajax({url: "/api/search"});
+      req.response(enyo.bind(this, "processSearchResults"));
+      req.go({searchTerm: searchText,limit: 50});
+    } else {
+      this.searchInProgress = false;
+    }
+  },
+  processSearchResults: function(inRequest, inResponse) {
+    this.lastSearchResponse = inResponse;
+    this.results = inResponse.SearchResultsResponse.results;
+    this.$.resultList.setCount(this.results.length);
+    this.$.resultList.reset();
+    this.searchInProgress = false;
+    this.doSearchCompleted();
+  },
+  additionSearch: function(searchText) {
+    if (this.searchInProgress) {
+      return;
+    }
+    
+    this.searchInProgress = true;
+    var req = new enyo.Ajax({url: "/api/search"});
+    req.response(enyo.bind(this, "processAdditionSearchResults"));
+    req.go({searchTerm: searchText,limit: 50, skip: this.results.length});
+  },
+  processAdditionSearchResults: function(inRequest, inResponse) {
+    this.lastSearchResponse = inResponse;
+    this.results.push.apply(this.results,inResponse.SearchResultsResponse.results);
+    this.$.resultList.setCount(this.results.length);
+    this.$.resultList.refresh();
+    this.searchInProgress = false;
+    this.doSearchCompleted();
+  },
+  scrolling: function(inSender, inEvent) {
+    var boundary = inEvent.originator.bottomBoundary;
+    if (boundary && boundary != 0) {
+      var y = inEvent.originator.y;
+      var percentage = (Math.round(y) / Math.round(boundary))*100;
+      console.log("Boundary: " + boundary + " Current: " + y + " remainder: " + (Math.round(boundary) - Math.round(y)) + " Percent: " + ((Math.round(y) / Math.round(boundary))*100));
+      
+      if (percentage > 95) {
+        console.log("Fire search");
+        this.additionSearch(this.searchText);
+      }
+    }
+  },
+  setupItem: function(inSender, inEvent) {
+    var i = inEvent.index;
+    var item = this.results[i];
+    var entry = item.job.JobSummary.title + " (" + item.distance + " miles away)";
+    this.$.jobTitle.setContent(entry);
+  },
+  itemClicked: function(inSender, inEvent) {
+    var i = inEvent.index;
+    this.doJobClicked({index: i});
+  }
+});
 
 enyo.kind({
   name: "MapView",
@@ -102,11 +192,6 @@ enyo.kind({
   published: {
       mapData: "",
   },
-  // events: {
-  //   // onJobLoaded: "",
-  //   // onJobDoesNotExist: "",
-  //   // onJobResponseError: ""
-  // },
   components: [
     {name: "mapview", tag: "div", classes: "map-view"}
   ],

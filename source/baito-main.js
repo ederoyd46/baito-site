@@ -21,7 +21,7 @@ enyo.kind({
       ]},
     ]},
     {kind: "FittableColumns", fit: true, components: [
-      {name: "resultList", touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onJobClicked: "openJobItem"},
+      {name: "resultList", rowsPerPage: 1000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onJobClicked: "openJobItem"},
       {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [
         {name: "mapContainer", kind: "MapView"},
         {name: "jobContainer", kind: "Scroller", touch: true, components: [
@@ -41,8 +41,8 @@ enyo.kind({
   },
   loadMaps: function(inSender, inEvent) {
     var response = this.$.resultList.lastSearchResponse;
-    
     this.$.mapContainer.setMapData(response);
+    this.$.contentPanels.setIndex(0);
     this.$.mapContainer.centerMap();
   },
   openJobItem: function(inSender, inEvent) {

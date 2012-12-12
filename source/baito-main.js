@@ -21,9 +21,9 @@ enyo.kind({
       ]},
     ]},
     {kind: "FittableColumns", fit: true, components: [
-      {name: "resultList", rowsPerPage: 1000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onJobClicked: "openJobItem"},
+      {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onJobClicked: "openJobItem"},
       {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [
-        {name: "mapContainer", kind: "MapView"},
+        {name: "mapContainer", kind: "MapView", onJobClicked: "mapJobClicked"},
         {name: "jobContainer", kind: "Scroller", touch: true, components: [
           {name: "jobview", kind: "JobDetails"}
         ]}
@@ -43,6 +43,11 @@ enyo.kind({
     var item = this.$.resultList.results[inEvent.index];
     jobId = item.job.JobSummary.uuid;
     this.$.jobview.setJobId(jobId);
+    this.$.jobview.loadJob();
+    this.$.contentPanels.setIndex(1);
+  },
+  mapJobClicked: function(inSender, inEvent) {
+    this.$.jobview.setJobId(inEvent.uuid);
     this.$.jobview.loadJob();
     this.$.contentPanels.setIndex(1);
   }

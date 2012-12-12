@@ -63,7 +63,6 @@ enyo.kind({
     req.go({jobid: this.jobId});
   },
   processLoadedJob: function(inRequest, inResponse) {
-    console.log(inResponse);
     if (!inResponse.JobResponse) {
       console.log("Wrong object in response");
       this.doJobResponseError();
@@ -143,7 +142,6 @@ enyo.kind({
   },
   additionSearch: function(searchText) {
     if (this.searchInProgress || this.endOfResults) {
-      console.log("searchInProgress: " + this.searchInProgress + " endOfResults: " + this.endOfResults);
       return;
     }
     
@@ -201,6 +199,9 @@ enyo.kind({
   kind: "Control",
   map: null,
   markerCreated: [],
+  events: {
+    onJobClicked: "",
+  },
   published: {
       mapData: "",
   },
@@ -240,6 +241,7 @@ enyo.kind({
     var map = this.map;
     var markerCreated = this.markerCreated;
     var infowindow = new google.maps.InfoWindow({content: "", size: new google.maps.Size(50,50)});
+    window.jobObject = this;
     results.forEach(function(r) {
       var summary = r.job.JobSummary;
       var point = new google.maps.LatLng(summary.location.latitude, summary.location.longitude);
@@ -251,10 +253,16 @@ enyo.kind({
           visible: true,
           map: map
         });
-          
+        
         markerCreated.push(summary.uuid);
         google.maps.event.addListener(marker, 'click', function(event) {
-          infowindow.content = summary.title;
+          var contentStr = summary.title 
+                           + "<br><br>"
+                           + "<table border='1'><th>hours</th><th>wage</th>"
+                           + "<tr><td>" + summary.hours + "</td><td>£" + summary.wage + "</td></tr>"
+                           + "</table><br>"
+                           + "<a href=\"#\" onclick=\"window.jobObject.doJobClicked({uuid: '" + summary.uuid + "'});\">more</a>";
+          infowindow.content = contentStr;
           infowindow.open(map, marker);
         });
       }

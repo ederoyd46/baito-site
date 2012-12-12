@@ -240,7 +240,7 @@ enyo.kind({
     var results = response.results;
     var map = this.map;
     var markerCreated = this.markerCreated;
-    var infowindow = new google.maps.InfoWindow({content: "", size: new google.maps.Size(50,50)});
+    window.infowindow = !window.infowindow ? new google.maps.InfoWindow({content: "", size: new google.maps.Size(50,50)}) : infowindow;
     window.jobObject = this;
     results.forEach(function(r) {
       var summary = r.job.JobSummary;
@@ -262,8 +262,8 @@ enyo.kind({
                            + "<tr><td>" + summary.hours + "</td><td>£" + summary.wage + "</td></tr>"
                            + "</table><br>"
                            + "<a href=\"#\" onclick=\"window.jobObject.doJobClicked({uuid: '" + summary.uuid + "'});\">more</a>";
-          infowindow.content = contentStr;
-          infowindow.open(map, marker);
+          window.infowindow.content = contentStr;
+          window.infowindow.open(map, marker);
         });
       }
     });

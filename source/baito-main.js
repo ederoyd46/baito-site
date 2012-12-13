@@ -2,6 +2,8 @@ enyo.kind({
   name: "App",
   kind: "FittableRows",
   classes: "enyo-fit",
+  SEARCH_VIEW: 0,
+  LOGIN_VIEW: 1,
   components: [
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", components: [
       {kind: "onyx.Button", content: "Go", ontap: "search"},
@@ -12,7 +14,7 @@ enyo.kind({
       {kind: "onyx.MenuDecorator", classes: "action-menu", name: "actionMenu", components: [
           {content: "Actions"},
           {kind: "onyx.Menu", components: [
-              {content: "Login"},
+              {content: "Login", ontap: "login"},
               {content: "Login via Facebook"},
               {content: "My Account"},
               {classes: "onyx-menu-divider"},
@@ -20,17 +22,24 @@ enyo.kind({
           ]}
       ]},
     ]},
-    {kind: "FittableColumns", fit: true, components: [
-      {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onJobClicked: "openJobItem"},
-      {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [
-        {name: "mapContainer", kind: "MapView", onJobClicked: "mapJobClicked"},
-        {name: "jobContainer", kind: "Scroller", touch: true, components: [
-          {name: "jobview", kind: "JobDetails"}
+    {kind: "Panels", arrangerKind: "LeftRightArranger", margin: 0, name: "pageContentPanels", draggable:false, animate: true, fit: true, components: [
+      {kind: "FittableColumns", fit: true, components: [
+        {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onJobClicked: "openJobItem"},
+        {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [
+          {name: "mapContainer", kind: "MapView", onJobClicked: "mapJobClicked"},
+          {name: "jobContainer", kind: "Scroller", touch: true, components: [
+            {name: "jobview", kind: "JobDetails"}
+          ]}
         ]}
-      ]}
+      ]},
+      {name: "loginContainer"},
     ]},
   ],
+  login: function(inSender, inEvent) {
+    this.$.pageContentPanels.setIndex(this.LOGIN_VIEW);
+  },
   search: function(inSender, inEvent) {
+    this.$.pageContentPanels.setIndex(this.SEARCH_VIEW);
     this.$.resultList.search(this.$.searchInput.getValue());
   },
   loadMaps: function(inSender, inEvent) {

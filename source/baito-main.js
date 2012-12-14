@@ -10,17 +10,8 @@ enyo.kind({
       {kind: "onyx.InputDecorator", components: [
         {kind: "onyx.Input", name: "searchInput", value: "Leeds", classes: "search-input", placeholder: "search for jobs in..."}
       ]},
-      { fit: true },
-      {kind: "onyx.MenuDecorator", classes: "action-menu", name: "actionMenu", components: [
-          {name: "menuActions", content: "Actions"},
-          {kind: "onyx.Menu", components: [
-              {content: "Login", ontap: "login"},
-              {content: "Register", ontap: "register"},
-              {content: "My Account"},
-              {classes: "onyx-menu-divider"},
-              {content: "Logout"},
-          ]}
-      ]},
+      { name: "menuSpacer", fit: true },
+      {kind: "ActionMenu", name: "actionMenu", onMenuActionPerformed: "refreshSpacer"},
     ]},
     {kind: "Panels", arrangerKind: "LeftRightArranger", margin: 0, name: "pageContentPanels", draggable:false, animate: true, fit: true, components: [
       {kind: "FittableColumns", fit: true, components: [
@@ -34,15 +25,9 @@ enyo.kind({
       ]},
       {name: "registerContainer", kind: "RegisterContainer"},
     ]},
-    {name: "loginContainer", kind: "LoginContainer", floating: true, centered: true, onLoginComplete: "loginComplete", scrim: true, scrimWhenModal: false}
   ],
-  login: function(inSender, inEvent) {
-    this.$.loginContainer.show();
-  },
-  loginComplete: function(inSender, inEvent) {
-    this.$.menuActions.setContent(inEvent.name);
-    this.$.loginContainer.hide();
-    // this.$.pageContentPanels.setIndex(this.SEARCH_VIEW);
+  refreshSpacer: function(inSender, inEvent) {
+    this.resized();
   },
   register: function(inSender, inEvent) {
     this.$.pageContentPanels.setIndex(this.LOGIN_VIEW);

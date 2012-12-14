@@ -1,4 +1,76 @@
 enyo.kind({
+  name: "ActionMenu",
+  kind: "Control",
+  events: {
+    onMenuActionPerformed: ""
+  },
+  components: [
+    {name: "welcomeItem", content: "", classes: "welcome-item"},
+    {kind: "onyx.MenuDecorator", classes: "action-menu", components: [
+      {name: "menuActions", content: "Actions"},
+      {kind: "onyx.Menu", components: [
+          {name: "loginItem", content: "Login", ontap: "login"},
+          {name: "registerItem", content: "Register", ontap: "register"},
+          {name: "myaccountItem", content: "My Account"},
+          {name: "dividerItem", classes: "onyx-menu-divider"},
+          {name: "logoutItem", content: "Logout", ontap: "logout"},
+      ]},
+    ]},
+    {name: "loginContainer", kind: "LoginContainer", floating: true, centered: true, onLoginComplete: "loginComplete", scrim: true, scrimWhenModal: false}
+  ],
+  create: function() {
+    this.inherited(arguments);
+    this.refreshMenuItems();
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  refreshMenuItems: function() {
+    var req = new enyo.Ajax({url: "/api/user/whoami", method: "GET", sync: true});
+    req.response(enyo.bind(this, "processRefreshMenuItems"));
+    req.go();
+  },
+  processRefreshMenuItems: function(inRequest, inResponse) {
+    if (inResponse.UserResponse.success) {
+      this.$.loginItem.hide();
+      this.$.registerItem.hide();
+      this.$.myaccountItem.show();
+      this.$.dividerItem.show();
+      this.$.logoutItem.show();
+      this.$.welcomeItem.setContent(inResponse.UserResponse.user.name)
+      this.$.welcomeItem.show();
+    } else {
+      this.$.loginItem.show();
+      this.$.registerItem.show();
+      this.$.myaccountItem.hide();
+      this.$.dividerItem.hide();
+      this.$.logoutItem.hide();
+      this.$.welcomeItem.setContent("")
+      this.$.welcomeItem.hide();
+    }
+    
+    this.doMenuActionPerformed();
+  },
+  login: function(inSender, inEvent) {
+    this.$.loginContainer.show();
+  },
+  loginComplete: function(inSender, inEvent) {
+    this.refreshMenuItems();
+    this.$.loginContainer.hide();
+  },
+  logout: function(inSender, inEvent) {
+    var req = new enyo.Ajax({url: "/api/user/logout", method: "GET", sync: true});
+    req.response(enyo.bind(this, "processLogout"));
+    
+    req.go();
+  },
+  processLogout: function(inRequest, inResponse) {
+    this.refreshMenuItems();
+    console.log(inResponse);
+  }
+});
+
+enyo.kind({
   name: "LoginContainer",
   classes: "login-container",
   kind: "onyx.Popup",
@@ -17,6 +89,12 @@ enyo.kind({
         {name: "login", kind: "onyx.Button", content: "Login", ontap: "login"}
       ]}
   ],
+  create: function() {
+    this.inherited(arguments);
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
   login: function(inSender,inEvent) {
     this.$.username.getValue();
     this.$.password.getValue();
@@ -77,6 +155,12 @@ enyo.kind({
     ]}
     
   ],
+  create: function() {
+    this.inherited(arguments);
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },  
   register: function(inSender, inEvent) {
     var dob = this.$.registerDateOfBirth.getValue()
     var dobStr = dob.getFullYear() + "-" + (dob.getMonth()+1) + "-" + dob.getDate();

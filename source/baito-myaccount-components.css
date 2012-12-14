@@ -16,3 +16,10 @@
     margin-right: 5px;
     margin-top: 5px;
 }
+.action-menu {
+    display: inline-block;
+}
+.welcome-item {
+    display: inline-block;
+    margin-right: 10px;
+}

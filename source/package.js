@@ -1,6 +1,8 @@
 enyo.depends(
 	"$lib/layout",
 	"$lib/onyx",
+  "$lib/g11n",
+  "crypto-sha256.js",
   "baito-main.js",
   "baito-main.css",
   "baito-components.js",

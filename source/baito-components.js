@@ -169,9 +169,7 @@ enyo.kind({
     if (boundary && boundary != 0) {
       var y = inEvent.originator.y;
       var percentage = (Math.round(y) / Math.round(boundary))*100;
-      // console.log("Boundary: " + boundary + " Current: " + y + " remainder: " + (Math.round(boundary) - Math.round(y)) + " Percent: " + ((Math.round(y) / Math.round(boundary))*100));
-      
-      if (percentage > 95) {
+      if (percentage > 90) {
         this.additionSearch(this.searchText);
       }
     }

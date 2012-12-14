@@ -6,5 +6,6 @@ enyo.depends(
   "baito-main.css",
   "baito-components.js",
   "baito-components.css",
-  "baito-myaccount-components.js"
+  "baito-myaccount-components.js",
+  "baito-myaccount-components.css"
 );

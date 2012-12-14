@@ -1,18 +1,56 @@
 enyo.kind({
   name: "LoginContainer",
+  classes: "login-container",
+  kind: "onyx.Popup",
+  events: {
+    onLoginComplete: ""
+  },
+  components: [
+      {kind: "onyx.InputDecorator", classes: "login-inputs", components: [
+        {name: "username", kind: "onyx.Input", placeholder: "Enter your username"}
+      ]},
+      {kind: "onyx.InputDecorator", classes: "login-inputs", components: [
+        {name: "password", kind: "onyx.Input", placeholder: "Enter your password"}
+      ]},
+      {tag:"br"},
+      {classes: "login-button", components: [
+        {name: "login", kind: "onyx.Button", content: "Login", ontap: "login"}
+      ]}
+  ],
+  login: function(inSender,inEvent) {
+    this.$.username.getValue();
+    this.$.password.getValue();
+    var userObj = "username=" + this.$.username.getValue()
+                + "&password=" + Crypto.SHA256(this.$.password.getValue());
+    var req = new enyo.Ajax({url: "/api/user/login", method: "POST", postBody: userObj, sync: true});
+    req.response(enyo.bind(this, "processLoginUser"));
+    req.go();
+  },
+  processLoginUser: function(inSender, inEvent) {
+    if (!inEvent.UserResponse) {
+      console.log("Not expected response");
+      return;
+    }
+    
+    if (!inEvent.UserResponse.success) {
+      var errors = inEvent.UserResponse.errors;
+      errors.forEach(function(e) {
+        console.log(e);
+      });
+      
+      return;
+    }
+    this.doLoginComplete({name: inEvent.UserResponse.user.name});
+  }
+  
+});
+
+
+enyo.kind({
+  name: "RegisterContainer",
   classes: "enyo-fit",
   layoutKind: "FittableRowsLayout",
   components: [
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Login"},
-      {kind: "onyx.InputDecorator", components: [
-        {kind: "onyx.Input", placeholder: "Enter a username"}
-      ]},
-      {kind: "onyx.InputDecorator", components: [
-        {kind: "onyx.Input", placeholder: "Enter a password"}
-      ]},
-      {kind: "onyx.Button", content: "Login"}
-    ]},
     {kind: "onyx.Groupbox", components: [
       {kind: "onyx.GroupboxHeader", content: "Register"},
       {kind: "onyx.InputDecorator", components: [
@@ -34,12 +72,12 @@ enyo.kind({
       {kind: "onyx.Button", content: "Register", ontap: "register"}
     ]},
     {name: "infoPopup", kind: "onyx.Popup", floating: true, centered: true, style: "padding: 10px", onHide: "popupHidden", scrim: true, scrimWhenModal: false, components: [
-      {name: "infoPopupContent", content: "Popup..."}
+      {name: "infoPopupContent", content: "..."},
+      {name: "infoPopupContentButton", kind: "onyx.Button", content: "OK", classes: "info-popup-content-button", ontap: ""}
     ]}
     
   ],
   register: function(inSender, inEvent) {
-    // this.$.dateOfBirthPicker.setLocale("en_gb");
     var dob = this.$.registerDateOfBirth.getValue()
     var dobStr = dob.getFullYear() + "-" + (dob.getMonth()+1) + "-" + dob.getDate();
     var userReqObj = "username=" + this.$.registerUsername.getValue()
@@ -49,10 +87,9 @@ enyo.kind({
                    + "&phone=" + this.$.registerTelephone.getValue()
                    + "&birthDate=" + dobStr;
                  
-    var req = new enyo.Ajax({url: "http://baito-dev.co.uk/api/user/create", method: "POST", postBody: userReqObj, sync: true});
+    var req = new enyo.Ajax({url: "/api/user/create", method: "POST", postBody: userReqObj, sync: true});
     req.response(enyo.bind(this, "processRegisterUser"));
     req.go();
-    
   },
   processRegisterUser: function(inRequest, inResponse) {
     if (!inResponse.UserResponse) {
@@ -72,9 +109,8 @@ enyo.kind({
       return;
     }
 
-    var username = inResponse.UserResponse.username;
-
-    this.$.infoPopupContent.setContent("User " + username + "Registered Successfully");
+    var username = inResponse.UserResponse.user.username;
+    this.$.infoPopupContent.setContent("User <b>" + username + "</b> Registered Successfully");
     this.$.infoPopup.show();
   }
 });

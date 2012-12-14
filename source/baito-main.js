@@ -12,10 +12,10 @@ enyo.kind({
       ]},
       { fit: true },
       {kind: "onyx.MenuDecorator", classes: "action-menu", name: "actionMenu", components: [
-          {content: "Actions"},
+          {name: "menuActions", content: "Actions"},
           {kind: "onyx.Menu", components: [
               {content: "Login", ontap: "login"},
-              {content: "Login via Facebook"},
+              {content: "Register", ontap: "register"},
               {content: "My Account"},
               {classes: "onyx-menu-divider"},
               {content: "Logout"},
@@ -32,10 +32,19 @@ enyo.kind({
           ]}
         ]}
       ]},
-      {name: "loginContainer", kind: "LoginContainer"},
+      {name: "registerContainer", kind: "RegisterContainer"},
     ]},
+    {name: "loginContainer", kind: "LoginContainer", floating: true, centered: true, onLoginComplete: "loginComplete", scrim: true, scrimWhenModal: false}
   ],
   login: function(inSender, inEvent) {
+    this.$.loginContainer.show();
+  },
+  loginComplete: function(inSender, inEvent) {
+    this.$.menuActions.setContent(inEvent.name);
+    this.$.loginContainer.hide();
+    // this.$.pageContentPanels.setIndex(this.SEARCH_VIEW);
+  },
+  register: function(inSender, inEvent) {
     this.$.pageContentPanels.setIndex(this.LOGIN_VIEW);
   },
   search: function(inSender, inEvent) {

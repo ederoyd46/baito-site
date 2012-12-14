@@ -3,7 +3,6 @@ enyo.kind({
   kind: "FittableRows",
   classes: "enyo-fit",
   SEARCH_VIEW: 0,
-  LOGIN_VIEW: 1,
   components: [
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", components: [
       {kind: "onyx.Button", content: "Go", ontap: "search"},
@@ -23,14 +22,10 @@ enyo.kind({
           ]}
         ]}
       ]},
-      {name: "registerContainer", kind: "RegisterContainer"},
     ]},
   ],
   refreshSpacer: function(inSender, inEvent) {
     this.resized();
-  },
-  register: function(inSender, inEvent) {
-    this.$.pageContentPanels.setIndex(this.LOGIN_VIEW);
   },
   search: function(inSender, inEvent) {
     this.$.pageContentPanels.setIndex(this.SEARCH_VIEW);

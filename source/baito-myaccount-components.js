@@ -10,13 +10,14 @@ enyo.kind({
       {name: "menuActions", content: "Actions"},
       {kind: "onyx.Menu", components: [
           {name: "loginItem", content: "Login", ontap: "login"},
-          {name: "registerItem", content: "Register", ontap: "register"},
           {name: "myaccountItem", content: "My Account"},
           {name: "dividerItem", classes: "onyx-menu-divider"},
+          {name: "registerItem", content: "Register", ontap: "register"},
           {name: "logoutItem", content: "Logout", ontap: "logout"},
       ]},
     ]},
-    {name: "loginContainer", kind: "LoginContainer", floating: true, centered: true, onLoginComplete: "loginComplete", scrim: true, scrimWhenModal: false}
+    {name: "loginContainer", kind: "LoginContainer", floating: true, centered: true, onLoginComplete: "loginComplete", scrim: true, scrimWhenModal: false},
+    {name: "registerContainer", kind: "RegisterContainer", floating: true, centered: true, onRegisterComplete: "registerComplete", scrim: true, scrimWhenModal: false}
   ],
   create: function() {
     this.inherited(arguments);
@@ -35,7 +36,6 @@ enyo.kind({
       this.$.loginItem.hide();
       this.$.registerItem.hide();
       this.$.myaccountItem.show();
-      this.$.dividerItem.show();
       this.$.logoutItem.show();
       this.$.welcomeItem.setContent(inResponse.UserResponse.user.name)
       this.$.welcomeItem.show();
@@ -43,7 +43,6 @@ enyo.kind({
       this.$.loginItem.show();
       this.$.registerItem.show();
       this.$.myaccountItem.hide();
-      this.$.dividerItem.hide();
       this.$.logoutItem.hide();
       this.$.welcomeItem.setContent("")
       this.$.welcomeItem.hide();
@@ -61,13 +60,19 @@ enyo.kind({
   logout: function(inSender, inEvent) {
     var req = new enyo.Ajax({url: "/api/user/logout", method: "GET", sync: true});
     req.response(enyo.bind(this, "processLogout"));
-    
     req.go();
   },
   processLogout: function(inRequest, inResponse) {
     this.refreshMenuItems();
     console.log(inResponse);
-  }
+  },
+  register: function(inSender, inEvent) {
+    this.$.registerContainer.show();
+  },
+  registerComplete: function(inSender, inEvent) {
+    this.refreshMenuItems();
+    this.$.registerContainer.hide();
+  },
 });
 
 enyo.kind({
@@ -126,34 +131,29 @@ enyo.kind({
 
 enyo.kind({
   name: "RegisterContainer",
-  classes: "enyo-fit",
-  layoutKind: "FittableRowsLayout",
+  kind: "onyx.Popup",
+  classes: "register-container",
+  events: {
+    onRegisterComplete: ""
+  },
   components: [
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Register"},
-      {kind: "onyx.InputDecorator", components: [
-        {name: "registerUsername", kind: "onyx.Input", placeholder: "Enter a username"}
-      ]},
-      {kind: "onyx.InputDecorator", components: [
-        {name: "registerPassword", kind: "onyx.Input", placeholder: "Enter a password"}
-      ]},
-      {kind: "onyx.InputDecorator", components: [
-        {name: "registerName", kind: "onyx.Input", placeholder: "Enter your name"}
-      ]},
-      {kind: "onyx.InputDecorator", components: [
-        {name: "registerEmail", kind: "onyx.Input", placeholder: "Enter your email"}
-      ]},
-      {kind: "onyx.InputDecorator", components: [
-        {name: "registerTelephone", kind: "onyx.Input", placeholder: "Enter your phone number"}
-      ]},
-      {name: "registerDateOfBirth", kind: "onyx.DatePicker", locale: "en_gb", maxYear: 2012},
-      {kind: "onyx.Button", content: "Register", ontap: "register"}
+    {kind: "onyx.InputDecorator", classes: "register-input", components: [
+      {name: "registerUsername", kind: "onyx.Input", placeholder: "Username"}
     ]},
-    {name: "infoPopup", kind: "onyx.Popup", floating: true, centered: true, style: "padding: 10px", onHide: "popupHidden", scrim: true, scrimWhenModal: false, components: [
-      {name: "infoPopupContent", content: "..."},
-      {name: "infoPopupContentButton", kind: "onyx.Button", content: "OK", classes: "info-popup-content-button", ontap: ""}
-    ]}
-    
+    {kind: "onyx.InputDecorator", classes: "register-input", components: [
+      {name: "registerPassword", kind: "onyx.Input", placeholder: "Password"}
+    ]},
+    {kind: "onyx.InputDecorator", classes: "register-input", components: [
+      {name: "registerName", kind: "onyx.Input", placeholder: "Name"}
+    ]},
+    {kind: "onyx.InputDecorator", classes: "register-input", components: [
+      {name: "registerEmail", kind: "onyx.Input", placeholder: "Email"}
+    ]},
+    {kind: "onyx.InputDecorator", classes: "register-input", components: [
+      {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number"}
+    ]},
+    {name: "registerDateOfBirth", kind: "onyx.DatePicker", locale: "en_gb", maxYear: 2012},
+    {kind: "onyx.Button", content: "Register", classes: "register-button", ontap: "register"}
   ],
   create: function() {
     this.inherited(arguments);
@@ -176,12 +176,6 @@ enyo.kind({
     req.go();
   },
   processRegisterUser: function(inRequest, inResponse) {
-    if (!inResponse.UserResponse) {
-      console.log("Incorrect response");
-      console.log(inResponse);
-      return;
-    }
-    
     if (!inResponse.UserResponse.success) {
       console.log("Validation errors");
       console.log(inResponse);
@@ -192,9 +186,6 @@ enyo.kind({
       });
       return;
     }
-
-    var username = inResponse.UserResponse.user.username;
-    this.$.infoPopupContent.setContent("User <b>" + username + "</b> Registered Successfully");
-    this.$.infoPopup.show();
+    this.doRegisterComplete();
   }
 });

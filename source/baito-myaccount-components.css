@@ -23,3 +23,18 @@
     display: inline-block;
     margin-right: 10px;
 }
+
+
+.register-container {
+    padding: 10px;
+}
+
+.register-input {
+    display: block;
+}
+
+.register-button {
+    float: right;
+    margin-right: 5px;
+    margin-top: 5px;
+}

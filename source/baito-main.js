@@ -32,7 +32,7 @@ enyo.kind({
           ]}
         ]}
       ]},
-      {name: "loginContainer"},
+      {name: "loginContainer", kind: "LoginContainer"},
     ]},
   ],
   login: function(inSender, inEvent) {

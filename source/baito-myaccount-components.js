@@ -16,8 +16,6 @@ enyo.kind({
           {name: "logoutItem", content: "Logout", ontap: "logout"},
       ]},
     ]},
-    {name: "loginContainer", kind: "LoginContainer", floating: true, centered: true, onLoginComplete: "loginComplete", scrim: true, scrimWhenModal: false},
-    {name: "registerContainer", kind: "RegisterContainer", floating: true, centered: true, onRegisterComplete: "registerComplete", scrim: true, scrimWhenModal: false}
   ],
   create: function() {
     this.inherited(arguments);
@@ -51,7 +49,11 @@ enyo.kind({
     this.doMenuActionPerformed();
   },
   login: function(inSender, inEvent) {
+    this.createComponent({name: "loginContainer", kind: "LoginContainer", floating: true, centered: true, onLoginComplete: "loginComplete", onHide: "destroyLogin", scrim: true, scrimWhenModal: false});
     this.$.loginContainer.show();
+  },
+  destroyLogin: function(inSender, inEvent) {
+    this.$.loginContainer.destroy();
   },
   loginComplete: function(inSender, inEvent) {
     this.refreshMenuItems();
@@ -64,10 +66,13 @@ enyo.kind({
   },
   processLogout: function(inRequest, inResponse) {
     this.refreshMenuItems();
-    console.log(inResponse);
   },
   register: function(inSender, inEvent) {
+    this.createComponent({name: "registerContainer", kind: "RegisterContainer", floating: true, centered: true, onRegisterComplete: "registerComplete", onHide: "destroyRegister", scrim: true, scrimWhenModal: false});
     this.$.registerContainer.show();
+  },
+  destroyRegister: function(inSender, inEvent) {
+    this.$.registerContainer.destroy();
   },
   registerComplete: function(inSender, inEvent) {
     this.refreshMenuItems();
@@ -152,7 +157,7 @@ enyo.kind({
     {kind: "onyx.InputDecorator", classes: "register-input", components: [
       {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number"}
     ]},
-    {name: "registerDateOfBirth", kind: "onyx.DatePicker", locale: "en_gb", maxYear: 2012},
+    {name: "registerDateOfBirth", kind: "onyx.DatePicker", maxYear: 2012},
     {kind: "onyx.Button", content: "Register", classes: "register-button", ontap: "register"}
   ],
   create: function() {
@@ -160,10 +165,17 @@ enyo.kind({
   },
   destroy: function() {
     this.inherited(arguments);
-  },  
+  },
+  padDate: function(value) {
+    if (value < 10) {
+      return "0" + value
+    } else {
+      return value;
+    }
+  },
   register: function(inSender, inEvent) {
     var dob = this.$.registerDateOfBirth.getValue()
-    var dobStr = dob.getFullYear() + "-" + (dob.getMonth()+1) + "-" + dob.getDate();
+    var dobStr = dob.getFullYear() + "-" + this.padDate((dob.getMonth()+1)) + "-" + this.padDate(dob.getDate());
     var userReqObj = "username=" + this.$.registerUsername.getValue()
                    + "&password=" + Crypto.SHA256(this.$.registerPassword.getValue())
                    + "&name=" + this.$.registerName.getValue()

@@ -242,12 +242,12 @@ enyo.kind({
     var map = this.map;
     var markerCreated = this.markerCreated;
     window.infowindow = !window.infowindow ? new google.maps.InfoWindow({content: "", size: new google.maps.Size(50,50)}) : infowindow;
-    window.jobObject = this;
+    window.mapObject = this;
     results.forEach(function(r) {
       var summary = r.job.JobSummary;
       var point = new google.maps.LatLng(summary.location.latitude, summary.location.longitude);
       bounds.extend(point);
-      if (markerCreated.indexOf(summary.uuid) == -1) {
+      if (!window.mapObject.isMarkerCreated(summary.uuid)) {
         var marker = new google.maps.Marker({
           position: point,
           title: summary.title,
@@ -255,14 +255,14 @@ enyo.kind({
           map: map
         });
         
-        markerCreated.push(summary.uuid);
+        markerCreated.push({uuid: summary.uuid, marker: marker});
         google.maps.event.addListener(marker, 'click', function(event) {
           var contentStr = summary.title 
                            + "<br><br>"
                            + "<table border='1'><th>hours</th><th>wage</th>"
                            + "<tr><td>" + summary.hours + "</td><td>£" + summary.wage + "</td></tr>"
                            + "</table><br>"
-                           + "<a href=\"#\" onclick=\"window.jobObject.doJobClicked({uuid: '" + summary.uuid + "'});\">more</a>";
+                           + "<a href=\"#\" onclick=\"window.mapObject.doJobClicked({uuid: '" + summary.uuid + "'});\">more</a>";
           window.infowindow.content = contentStr;
           window.infowindow.open(map, marker);
         });
@@ -270,6 +270,22 @@ enyo.kind({
     });
     if (moveMap) {
       this.map.fitBounds(bounds);
+    }
+  },
+  isMarkerCreated: function(uuid) {
+    for (i=0;i<this.markerCreated.length; i++) {
+      if(this.markerCreated[i].uuid == uuid) {
+        return true;
+      };
+    }
+    return false;
+  },
+  panToJob: function(uuid) {
+    for (i=0;i<this.markerCreated.length; i++) {
+      if(this.markerCreated[i].uuid == uuid) {
+        google.maps.event.trigger(this.markerCreated[i].marker, 'click');
+        return;
+      };
     }
   }
 });

@@ -46,9 +46,11 @@ enyo.kind({
   openJobItem: function(inSender, inEvent) {
     var item = this.$.resultList.results[inEvent.index];
     jobId = item.job.JobSummary.uuid;
-    this.$.jobview.setJobId(jobId);
-    this.$.jobview.loadJob();
-    this.$.contentPanels.setIndex(1);
+    
+    this.$.mapContainer.panToJob(jobId);
+    // this.$.jobview.setJobId(jobId);
+    // this.$.jobview.loadJob();
+    // this.$.contentPanels.setIndex(1);
   },
   mapJobClicked: function(inSender, inEvent) {
     this.$.jobview.setJobId(inEvent.uuid);

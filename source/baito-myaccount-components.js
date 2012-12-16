@@ -77,9 +77,6 @@ enyo.kind({
     return true;
   },
   destroyRegister: function(inSender, inEvent) {
-    console.log("on destroy called");
-    console.log(inSender);
-    console.log(inEvent);
     this.$.registerContainer.destroy();
     return true;
   },

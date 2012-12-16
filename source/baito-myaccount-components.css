@@ -29,12 +29,22 @@
     padding: 10px;
 }
 
-.register-input {
+.register-input-decorator {
     display: block;
+}
+.register-input {
+    width: 100%;
 }
 
 .register-button {
     float: right;
     margin-right: 5px;
     margin-top: 5px;
+}
+
+.errors {
+}
+
+.error {
+    color: red;
 }

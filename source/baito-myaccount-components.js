@@ -98,6 +98,7 @@ enyo.kind({
     onLoginComplete: ""
   },
   components: [
+      {name: "loginErrors", classes: "errors"},
       {kind: "onyx.InputDecorator", classes: "login-inputs", components: [
         {name: "username", kind: "onyx.Input", placeholder: "Enter your username"}
       ]},
@@ -116,31 +117,32 @@ enyo.kind({
     this.inherited(arguments);
   },
   login: function(inSender,inEvent) {
+    this.$.loginErrors.destroyComponents();
     this.$.username.getValue();
     this.$.password.getValue();
-    var userObj = "username=" + this.$.username.getValue()
-                + "&password=" + Crypto.SHA256(this.$.password.getValue());
+    var userObj = "";
+    if (this.$.username.getValue().length > 0) {
+       userObj += "username=" + this.$.username.getValue();
+    }
+    if (this.$.password.getValue().length > 0) {
+       userObj += "&password=" + Crypto.SHA256(this.$.password.getValue());
+    }
     var req = new enyo.Ajax({url: "/api/user/login", method: "POST", postBody: userObj, sync: true});
     req.response(enyo.bind(this, "processLoginUser"));
     req.go();
   },
-  processLoginUser: function(inSender, inEvent) {
-    if (!inEvent.UserResponse) {
-      console.log("Not expected response");
-      return;
-    }
-    
-    if (!inEvent.UserResponse.success) {
-      var errors = inEvent.UserResponse.errors;
-      errors.forEach(function(e) {
-        console.log(e);
+  processLoginUser: function(inRequest, inResponse) {
+    if (!inResponse.UserResponse.success) {
+      var errorContainer = this.$.loginErrors.createComponent({tag: "ul"});
+      errorContainer.render();
+      var validationErrors = inResponse.UserResponse.errors;
+      validationErrors.forEach(function(e) {
+        errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
       });
-      
-      return;
+      return true;
     }
-    this.doLoginComplete({name: inEvent.UserResponse.user.name});
+    this.doLoginComplete({name: inResponse.UserResponse.user.name});
   }
-  
 });
 
 
@@ -152,26 +154,30 @@ enyo.kind({
     onRegisterComplete: ""
   },
   components: [
-    {kind: "onyx.InputDecorator", classes: "register-input", components: [
-      {name: "registerUsername", kind: "onyx.Input", placeholder: "Username"}
+    {name: "registerErrors", classes: "errors"},
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "registerUsername", kind: "onyx.Input", placeholder: "Username", classes: "register-input"}
     ]},
-    {kind: "onyx.InputDecorator", classes: "register-input", components: [
-      {name: "registerPassword", kind: "onyx.Input", placeholder: "Password"}
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "registerPassword", kind: "onyx.Input", placeholder: "Password", type: "password", classes: "register-input"}
     ]},
-    {kind: "onyx.InputDecorator", classes: "register-input", components: [
-      {name: "registerName", kind: "onyx.Input", placeholder: "Name"}
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "registerName", kind: "onyx.Input", placeholder: "Name", classes: "register-input"}
     ]},
-    {kind: "onyx.InputDecorator", classes: "register-input", components: [
-      {name: "registerEmail", kind: "onyx.Input", placeholder: "Email"}
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "registerEmail", kind: "onyx.Input", placeholder: "Email", type: "email", classes: "register-input"}
     ]},
-    {kind: "onyx.InputDecorator", classes: "register-input", components: [
-      {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number"}
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "register-input"}
     ]},
-    {name: "registerDateOfBirth", kind: "onyx.DatePicker", maxYear: 2012},
+    {name: "registerDateOfBirth", kind: "onyx.DatePicker", maxYear: 2012, onHide: "ignoreHideEvent"},
     {kind: "onyx.Button", content: "Register", classes: "register-button", ontap: "register"}
   ],
   create: function() {
     this.inherited(arguments);
+  },
+  ignoreHideEvent: function(inSender, inEvent) {
+    return true;
   },
   destroy: function() {
     this.inherited(arguments);
@@ -184,14 +190,27 @@ enyo.kind({
     }
   },
   register: function(inSender, inEvent) {
+    this.$.registerErrors.destroyComponents();
     var dob = this.$.registerDateOfBirth.getValue()
     var dobStr = dob.getFullYear() + "-" + this.padDate((dob.getMonth()+1)) + "-" + this.padDate(dob.getDate());
-    var userReqObj = "username=" + this.$.registerUsername.getValue()
-                   + "&password=" + Crypto.SHA256(this.$.registerPassword.getValue())
-                   + "&name=" + this.$.registerName.getValue()
-                   + "&email=" + this.$.registerEmail.getValue()
-                   + "&phone=" + this.$.registerTelephone.getValue()
-                   + "&birthDate=" + dobStr;
+    var userReqObj = "";
+    if (this.$.registerUsername.getValue().length > 0) {
+      userReqObj += "username=" + this.$.registerUsername.getValue();
+    }
+    if (this.$.registerPassword.getValue().length > 0 ) {
+      userReqObj += "&password=" + Crypto.SHA256(this.$.registerPassword.getValue());
+    }
+    if (this.$.registerName.getValue().length > 0 ) {
+      userReqObj += "&name=" + this.$.registerName.getValue();
+    }
+    if (this.$.registerEmail.getValue().length > 0 ) {
+      userReqObj += "&email=" + this.$.registerEmail.getValue();
+    }
+    if (this.$.registerTelephone.getValue().length > 0 ) {
+      userReqObj += "&phone=" + this.$.registerTelephone.getValue();
+    }
+    
+    userReqObj += "&birthDate=" + dobStr;
                  
     var req = new enyo.Ajax({url: "/api/user/create", method: "POST", postBody: userReqObj, sync: true});
     req.response(enyo.bind(this, "processRegisterUser"));
@@ -199,12 +218,11 @@ enyo.kind({
   },
   processRegisterUser: function(inRequest, inResponse) {
     if (!inResponse.UserResponse.success) {
-      console.log("Validation errors");
-      console.log(inResponse);
-      
+      var errorContainer = this.$.registerErrors.createComponent({tag: "ul"});
+      errorContainer.render();
       var validationErrors = inResponse.UserResponse.errors;
       validationErrors.forEach(function(e) {
-        console.log(e);
+        errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
       });
       return;
     }

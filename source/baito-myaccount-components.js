@@ -51,18 +51,22 @@ enyo.kind({
   login: function(inSender, inEvent) {
     this.createComponent({name: "loginContainer", kind: "LoginContainer", floating: true, centered: true, onLoginComplete: "loginComplete", onHide: "destroyLogin", scrim: true, scrimWhenModal: false});
     this.$.loginContainer.show();
+    return true;
   },
   destroyLogin: function(inSender, inEvent) {
     this.$.loginContainer.destroy();
+    return true;
   },
   loginComplete: function(inSender, inEvent) {
     this.refreshMenuItems();
     this.$.loginContainer.hide();
+    return true;
   },
   logout: function(inSender, inEvent) {
     var req = new enyo.Ajax({url: "/api/user/logout", method: "GET", sync: true});
     req.response(enyo.bind(this, "processLogout"));
     req.go();
+    return true;
   },
   processLogout: function(inRequest, inResponse) {
     this.refreshMenuItems();
@@ -70,13 +74,19 @@ enyo.kind({
   register: function(inSender, inEvent) {
     this.createComponent({name: "registerContainer", kind: "RegisterContainer", floating: true, centered: true, onRegisterComplete: "registerComplete", onHide: "destroyRegister", scrim: true, scrimWhenModal: false});
     this.$.registerContainer.show();
+    return true;
   },
   destroyRegister: function(inSender, inEvent) {
+    console.log("on destroy called");
+    console.log(inSender);
+    console.log(inEvent);
     this.$.registerContainer.destroy();
+    return true;
   },
   registerComplete: function(inSender, inEvent) {
     this.refreshMenuItems();
     this.$.registerContainer.hide();
+    return true;
   },
 });
 

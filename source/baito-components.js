@@ -95,7 +95,8 @@ enyo.kind({
   kind: "List",
   events: {
     onJobClicked: "",
-    onSearchCompleted: ""
+    onSearchCompleted: "",
+    onAdditionSearchCompleted: ""
   },
   published: {
     lastSearchResponse: "",
@@ -162,7 +163,7 @@ enyo.kind({
     this.setCount(this.results.length);
     this.refresh();
     this.searchInProgress = false;
-    this.doSearchCompleted();
+    this.doAdditionSearchCompleted();
   },
   scrolling: function(inSender, inEvent) {
     var boundary = inEvent.originator.bottomBoundary;
@@ -212,7 +213,7 @@ enyo.kind({
   destroy: function() {
     this.inherited(arguments);
   },  
-  centerMap: function() {
+  loadMap: function(moveMap) {
     var data = this.mapData;
 
     if (!data.SearchResultsResponse) {
@@ -231,7 +232,9 @@ enyo.kind({
         });
       }
     } else {
-      this.map.panTo(mapLatLng);
+      if (moveMap) {
+        this.map.panTo(mapLatLng);
+      }
     }
     var bounds = new google.maps.LatLngBounds();
       
@@ -265,6 +268,8 @@ enyo.kind({
         });
       }
     });
-    this.map.fitBounds(bounds);
+    if (moveMap) {
+      this.map.fitBounds(bounds);
+    }
   }
 });

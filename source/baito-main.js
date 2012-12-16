@@ -14,7 +14,7 @@ enyo.kind({
     ]},
     {kind: "Panels", arrangerKind: "LeftRightArranger", margin: 0, name: "pageContentPanels", draggable:false, animate: true, fit: true, components: [
       {kind: "FittableColumns", fit: true, components: [
-        {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onJobClicked: "openJobItem"},
+        {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onAdditionSearchCompleted: "additionLoadMaps", onJobClicked: "openJobItem"},
         {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [
           {name: "mapContainer", kind: "MapView", onJobClicked: "mapJobClicked"},
           {name: "jobContainer", kind: "Scroller", touch: true, components: [
@@ -35,7 +35,13 @@ enyo.kind({
     var response = this.$.resultList.lastSearchResponse;
     this.$.mapContainer.setMapData(response);
     this.$.contentPanels.setIndex(0);
-    this.$.mapContainer.centerMap();
+    this.$.mapContainer.loadMap(true);
+  },
+  additionLoadMaps: function(inSender, inEvent) {
+    var response = this.$.resultList.lastSearchResponse;
+    this.$.mapContainer.setMapData(response);
+    this.$.contentPanels.setIndex(0);
+    this.$.mapContainer.loadMap(false);
   },
   openJobItem: function(inSender, inEvent) {
     var item = this.$.resultList.results[inEvent.index];

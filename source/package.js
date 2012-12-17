@@ -1,6 +1,7 @@
 enyo.depends(
-	"$lib/layout",
-	"$lib/onyx",
+  "$lib/layout",
+  "$lib/onyx",
+  "$lib/datescroller",
   "crypto-sha256.js",
   "baito-main.js",
   "baito-main.css",

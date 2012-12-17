@@ -97,16 +97,21 @@ enyo.kind({
   components: [
       {name: "loginErrors", classes: "errors"},
       {kind: "onyx.InputDecorator", classes: "login-inputs", components: [
-        {name: "username", kind: "onyx.Input", placeholder: "Enter your username"}
+        {name: "username", kind: "onyx.Input", placeholder: "Enter your username", onkeypress: "inputChange"}
       ]},
       {kind: "onyx.InputDecorator", classes: "login-inputs", components: [
-        {name: "password", kind: "onyx.Input", placeholder: "Enter your password"}
+        {name: "password", kind: "onyx.Input", placeholder: "Enter your password", onkeypress: "inputChange"}
       ]},
       {tag:"br"},
       {classes: "login-button", components: [
         {name: "login", kind: "onyx.Button", content: "Login", ontap: "login"}
       ]}
   ],
+  inputChange: function(inSender, inEvent) {
+    if (inEvent.keyCode == 13) {
+      this.login(inSender, inEvent);
+    }
+  },
   create: function() {
     this.inherited(arguments);
   },
@@ -153,21 +158,22 @@ enyo.kind({
   components: [
     {name: "registerErrors", classes: "errors"},
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
-      {name: "registerUsername", kind: "onyx.Input", placeholder: "Username", classes: "register-input"}
+      {name: "registerUsername", kind: "onyx.Input", placeholder: "Username", classes: "register-input", onkeypress: "inputChange"}
     ]},
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
-      {name: "registerPassword", kind: "onyx.Input", placeholder: "Password", type: "password", classes: "register-input"}
+      {name: "registerPassword", kind: "onyx.Input", placeholder: "Password", type: "password", classes: "register-input", onkeypress: "inputChange"}
     ]},
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
-      {name: "registerName", kind: "onyx.Input", placeholder: "Name", classes: "register-input"}
+      {name: "registerName", kind: "onyx.Input", placeholder: "Name", classes: "register-input", onkeypress: "inputChange"}
     ]},
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
-      {name: "registerEmail", kind: "onyx.Input", placeholder: "Email", type: "email", classes: "register-input"}
+      {name: "registerEmail", kind: "onyx.Input", placeholder: "Email", type: "email", classes: "register-input", onkeypress: "inputChange"}
     ]},
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
-      {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "register-input"}
+      {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "register-input", onkeypress: "inputChange"}
     ]},
     {name: "registerDateOfBirth", kind: "onyx.DatePicker", maxYear: 2012, onHide: "ignoreHideEvent"},
+    {kind: "germboy.DateScroller", onDateSelected: "dateSelected", minYear: 1979, monthValue: 2, yearValue: 2012, dayValue: 5},
     {kind: "onyx.Button", content: "Register", classes: "register-button", ontap: "register"}
   ],
   create: function() {
@@ -184,6 +190,11 @@ enyo.kind({
       return "0" + value
     } else {
       return value;
+    }
+  },
+  inputChange: function(inSender, inEvent) {
+    if (inEvent.keyCode == 13) {
+      this.register(inSender, inEvent);
     }
   },
   register: function(inSender, inEvent) {

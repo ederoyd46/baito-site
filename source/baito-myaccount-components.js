@@ -172,8 +172,7 @@ enyo.kind({
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
       {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "register-input", onkeypress: "inputChange"}
     ]},
-    {name: "registerDateOfBirth", kind: "onyx.DatePicker", maxYear: 2012, onHide: "ignoreHideEvent"},
-    {kind: "germboy.DateScroller", onDateSelected: "dateSelected", minYear: 1900, rangeYears: 114, yearValue: 2013},
+    {name: "registerDateOfBirth", kind: "germboy.DateScroller", onDateSelected: "dateSelected", minYear: 1900, rangeYears: 114, yearValue: 2012},
     {kind: "onyx.Button", content: "Register", classes: "register-button", ontap: "register"}
   ],
   create: function() {

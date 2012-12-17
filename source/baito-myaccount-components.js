@@ -173,7 +173,7 @@ enyo.kind({
       {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "register-input", onkeypress: "inputChange"}
     ]},
     {name: "registerDateOfBirth", kind: "onyx.DatePicker", maxYear: 2012, onHide: "ignoreHideEvent"},
-    {kind: "germboy.DateScroller", onDateSelected: "dateSelected", minYear: 1979, monthValue: 2, yearValue: 2012, dayValue: 5},
+    {kind: "germboy.DateScroller", onDateSelected: "dateSelected", minYear: 1900, rangeYears: 114, yearValue: 2013},
     {kind: "onyx.Button", content: "Register", classes: "register-button", ontap: "register"}
   ],
   create: function() {

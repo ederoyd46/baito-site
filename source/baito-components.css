@@ -6,3 +6,13 @@
   width: 100%;
   height: 100%;
 }
+
+.job-container {
+  height : 100%;
+}
+
+.job-toolbar {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+}

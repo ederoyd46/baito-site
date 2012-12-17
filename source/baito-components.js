@@ -7,50 +7,60 @@ enyo.kind({
   events: {
     onJobLoaded: "",
     onJobDoesNotExist: "",
-    onJobResponseError: ""
+    onJobResponseError: "",
+    onBack: ""
   },
   components: [
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Title"},
-      {name: "title", style: "padding: 8px;"}
+    {name: "jobContainer", kind: "Scroller", touch: true, classes: "job-container", components: [
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Title"},
+        {name: "title", style: "padding: 8px;"}
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Description"},
+        {name: "description", style: "padding: 8px;", classes: "wrap"}
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Wage (per hour)"},
+        {name: "wage", style: "padding: 8px;"}
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Hours (per week)"},
+        {name: "hours", style: "padding: 8px;"}
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Company"},
+        {name: "company", style: "padding: 8px;"}
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Contact Name"},
+        {name: "contactName", style: "padding: 8px;"}
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Contact Email"},
+        {name: "contactEmail", style: "padding: 8px;"}
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Contact Telephone"},
+        {name: "contactTelephone", style: "padding: 8px;"}
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Address"},
+        {name: "address", style: "padding: 8px;", classes: "wrap"}
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Post Code"},
+        {name: "postCode", style: "padding: 8px;"}
+      ]},
+      {style: "height: 60px"} //Spacer
     ]},
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Description"},
-      {name: "description", style: "padding: 8px;", classes: "wrap"}
+    {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", classes: "job-toolbar", components: [
+      {kind: "onyx.Button", content: "Back", ontap:"backButtonTap"},
     ]},
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Wage (per hour)"},
-      {name: "wage", style: "padding: 8px;"}
-    ]},
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Hours (per week)"},
-      {name: "hours", style: "padding: 8px;"}
-    ]},
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Company"},
-      {name: "company", style: "padding: 8px;"}
-    ]},
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Contact Name"},
-      {name: "contactName", style: "padding: 8px;"}
-    ]},
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Contact Email"},
-      {name: "contactEmail", style: "padding: 8px;"}
-    ]},
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Contact Telephone"},
-      {name: "contactTelephone", style: "padding: 8px;"}
-    ]},
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Address"},
-      {name: "address", style: "padding: 8px;", classes: "wrap"}
-    ]},
-    {kind: "onyx.Groupbox", components: [
-      {kind: "onyx.GroupboxHeader", content: "Post Code"},
-      {name: "postCode", style: "padding: 8px;"}
-    ]}
   ],
+  backButtonTap: function(inSender, inEvent) {
+    this.doBack();
+  },
   create: function() {
     this.inherited(arguments);
   },
@@ -63,6 +73,7 @@ enyo.kind({
     req.go({jobid: this.jobId});
   },
   processLoadedJob: function(inRequest, inResponse) {
+    this.$.jobContainer.scrollToTop();
     if (!inResponse.JobResponse) {
       console.log("Wrong object in response");
       this.doJobResponseError();

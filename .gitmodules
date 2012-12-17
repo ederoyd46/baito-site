@@ -7,6 +7,3 @@
 [submodule "lib/layout"]
 	path = lib/layout
 	url = https://github.com/enyojs/layout.git
-[submodule "lib/datescroller"]
-	path = lib/datescroller
-	url = git@github.com:ederoyd46/DateScroller.git

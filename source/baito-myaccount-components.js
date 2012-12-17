@@ -172,7 +172,7 @@ enyo.kind({
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
       {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "register-input", onkeypress: "inputChange"}
     ]},
-    {name: "registerDateOfBirth", kind: "germboy.DateScroller", onDateSelected: "dateSelected", minYear: 1900, rangeYears: 114, yearValue: 2012},
+    {name: "registerDateOfBirth", kind: "germboy.DateScroller", minYear: 1900, rangeYears: 114},
     {kind: "onyx.Button", content: "Register", classes: "register-button", ontap: "register"}
   ],
   create: function() {
@@ -198,7 +198,7 @@ enyo.kind({
   },
   register: function(inSender, inEvent) {
     this.$.registerErrors.destroyComponents();
-    var dob = this.$.registerDateOfBirth.getValue()
+    var dob = this.$.registerDateOfBirth.getDateObj();
     var dobStr = dob.getFullYear() + "-" + this.padDate((dob.getMonth()+1)) + "-" + this.padDate(dob.getDate());
     var userReqObj = "";
     if (this.$.registerUsername.getValue().length > 0) {

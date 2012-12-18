@@ -3,6 +3,8 @@ enyo.kind({
   kind: "FittableRows",
   classes: "enyo-fit",
   SEARCH_VIEW: 0,
+  MAPS_VIEW: 0,
+  JOB_DETAILS: 1,
   components: [
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", components: [
       {kind: "onyx.Button", content: "Go", ontap: "search"},
@@ -14,9 +16,9 @@ enyo.kind({
     ]},
     {kind: "Panels", arrangerKind: "LeftRightArranger", margin: 0, name: "pageContentPanels", draggable:false, animate: true, fit: true, components: [
       {kind: "FittableColumns", fit: true, components: [
-        {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onAdditionSearchCompleted: "additionLoadMaps", onJobClicked: "openJobItem"},
+        {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onAdditionSearchCompleted: "additionLoadMaps", onJobClicked: "resultsListClick"},
         {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [
-          {name: "mapContainer", kind: "MapView", onJobClicked: "mapJobClicked"},
+          {name: "mapContainer", kind: "MapView", onJobClicked: "openJobItem"},
           {name: "jobview", kind: "JobDetails", onBack: "switchToMapView"}
         ]}
       ]},
@@ -32,7 +34,7 @@ enyo.kind({
   loadMaps: function(inSender, inEvent) {
     var response = this.$.resultList.lastSearchResponse;
     this.$.mapContainer.setMapData(response);
-    this.$.contentPanels.setIndex(0);
+    this.$.contentPanels.setIndex(this.MAPS_VIEW);
     this.$.mapContainer.loadMap(true);
   },
   additionLoadMaps: function(inSender, inEvent) {
@@ -41,18 +43,25 @@ enyo.kind({
     // this.$.contentPanels.setIndex(0);
     this.$.mapContainer.loadMap(false);
   },
-  openJobItem: function(inSender, inEvent) {
+  resultsListClick: function(inSender, inEvent) {
+    console.log(this.$.contentPanels.index);
     var item = this.$.resultList.results[inEvent.index];
-    jobId = item.job.JobSummary.uuid;
-    this.$.mapContainer.panToJob(jobId);
+    var jobId = item.job.JobSummary.uuid;
+    
+    if (this.$.contentPanels.index == 0) {
+      this.$.mapContainer.panToJob(jobId);
+    } else {
+      this.$.jobview.setJobId(jobId);
+      this.$.jobview.loadJob();
+    }
   },
   switchToMapView: function(inSender, inEvent) {
-    this.$.contentPanels.setIndex(0);
+    this.$.contentPanels.setIndex(this.MAPS_VIEW);
   },
-  mapJobClicked: function(inSender, inEvent) {
+  openJobItem: function(inSender, inEvent) {
     this.$.jobview.setJobId(inEvent.uuid);
     this.$.jobview.loadJob();
-    this.$.contentPanels.setIndex(1);
+    this.$.contentPanels.setIndex(this.JOB_DETAILS);
   }
 
 });

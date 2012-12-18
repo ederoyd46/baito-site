@@ -44,11 +44,10 @@ enyo.kind({
     this.$.mapContainer.loadMap(false);
   },
   resultsListClick: function(inSender, inEvent) {
-    console.log(this.$.contentPanels.index);
     var item = this.$.resultList.results[inEvent.index];
     var jobId = item.job.JobSummary.uuid;
     
-    if (this.$.contentPanels.index == 0) {
+    if (this.$.contentPanels.index == this.MAPS_VIEW) {
       this.$.mapContainer.panToJob(jobId);
     } else {
       this.$.jobview.setJobId(jobId);

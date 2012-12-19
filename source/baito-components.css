@@ -16,3 +16,11 @@
   bottom: 0px;
   width: 100%;
 }
+
+.apply-container {
+    padding: 10px;
+}
+
+.apply-input {
+    width: 100%;
+}

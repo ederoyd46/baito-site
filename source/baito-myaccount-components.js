@@ -97,7 +97,7 @@ enyo.kind({
   components: [
       {name: "loginErrors", classes: "errors"},
       {kind: "onyx.InputDecorator", classes: "login-inputs", components: [
-        {name: "username", kind: "onyx.Input", placeholder: "Enter your username", onkeypress: "inputChange"}
+        {name: "username", kind: "onyx.Input", placeholder: "Enter your username", onkeypress: "inputChange", defaultFocus: true}
       ]},
       {kind: "onyx.InputDecorator", classes: "login-inputs", components: [
         {name: "password", kind: "onyx.Input", placeholder: "Enter your password", onkeypress: "inputChange"}
@@ -160,7 +160,7 @@ enyo.kind({
   components: [
     {name: "registerErrors", classes: "errors"},
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
-      {name: "registerUsername", kind: "onyx.Input", placeholder: "Username", classes: "register-input", onkeypress: "inputChange"}
+      {name: "registerUsername", kind: "onyx.Input", placeholder: "Username", classes: "register-input", onkeypress: "inputChange", defaultFocus: true}
     ]},
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
       {name: "registerPassword", kind: "onyx.Input", placeholder: "Password", type: "password", classes: "register-input", onkeypress: "inputChange"}

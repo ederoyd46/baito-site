@@ -231,6 +231,97 @@ enyo.kind({
   }
 });
 
+enyo.kind({
+  name: "AppyContainer",
+  kind: "onyx.Popup",
+  classes: "register-container",
+  events: {
+    onRegisterComplete: ""
+  },
+  components: [
+    {name: "registerErrors", classes: "errors"},
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "registerUsername", kind: "onyx.Input", placeholder: "Username", classes: "register-input", onkeypress: "inputChange"}
+    ]},
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "registerPassword", kind: "onyx.Input", placeholder: "Password", type: "password", classes: "register-input", onkeypress: "inputChange"}
+    ]},
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "registerName", kind: "onyx.Input", placeholder: "Name", classes: "register-input", onkeypress: "inputChange"}
+    ]},
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "registerEmail", kind: "onyx.Input", placeholder: "Email", type: "email", classes: "register-input", onkeypress: "inputChange"}
+    ]},
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "register-input", onkeypress: "inputChange"}
+    ]},
+    {name: "registerDateOfBirth", kind: "germboy.DateScroller", minYear: 1900, rangeYears: 114},
+    {kind: "onyx.Button", content: "Register", classes: "register-button", ontap: "register"}
+  ],
+  create: function() {
+    this.inherited(arguments);
+  },
+  ignoreHideEvent: function(inSender, inEvent) {
+    return true;
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  padDate: function(value) {
+    if (value < 10) {
+      return "0" + value
+    } else {
+      return value;
+    }
+  },
+  inputChange: function(inSender, inEvent) {
+    if (inEvent.keyCode == 13) {
+      this.register(inSender, inEvent);
+    }
+  },
+  register: function(inSender, inEvent) {
+    this.$.registerErrors.destroyComponents();
+    var dob = this.$.registerDateOfBirth.getDateObj();
+    var dobStr = dob.getFullYear() + "-" + this.padDate((dob.getMonth()+1)) + "-" + this.padDate(dob.getDate());
+    var userReqObj = "";
+    if (this.$.registerUsername.getValue().length > 0) {
+      userReqObj += "username=" + this.$.registerUsername.getValue();
+    }
+    if (this.$.registerPassword.getValue().length > 0 ) {
+      userReqObj += "&password=" + Crypto.SHA256(this.$.registerPassword.getValue());
+    }
+    if (this.$.registerName.getValue().length > 0 ) {
+      userReqObj += "&name=" + this.$.registerName.getValue();
+    }
+    if (this.$.registerEmail.getValue().length > 0 ) {
+      userReqObj += "&email=" + this.$.registerEmail.getValue();
+    }
+    if (this.$.registerTelephone.getValue().length > 0 ) {
+      userReqObj += "&phone=" + this.$.registerTelephone.getValue();
+    }
+    
+    userReqObj += "&birthDate=" + dobStr;
+                 
+    var req = new enyo.Ajax({url: "/api/user/create", method: "POST", postBody: userReqObj, sync: true});
+    req.response(enyo.bind(this, "processRegisterUser"));
+    req.go();
+  },
+  processRegisterUser: function(inRequest, inResponse) {
+    if (!inResponse.UserResponse.success) {
+      var errorContainer = this.$.registerErrors.createComponent({tag: "ul"});
+      errorContainer.render();
+      var validationErrors = inResponse.UserResponse.errors;
+      validationErrors.forEach(function(e) {
+        errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
+      });
+      return;
+    }
+    enyo.Signals.send("onAuthenticationChange");
+    this.doRegisterComplete();
+  }
+});
+
+
 
 
 enyo.kind({
@@ -238,8 +329,9 @@ enyo.kind({
   kind: "List",
   events: {
     onJobClicked: "",
+    onJobLongPress: "",
     onSearchCompleted: "",
-    onAdditionSearchCompleted: ""
+    onAdditionSearchCompleted: "",
   },
   published: {
     lastSearchResponse: "",
@@ -253,7 +345,7 @@ enyo.kind({
   searchInProgress: false,
   endOfResults: false,
   components: [
-    {classes: "search-result-entry", ontap: "itemClicked", tag: "div", components: [
+    {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", onhold: "itemLongPress", components: [
       {name: "jobTitle", tag: "span"}
     ]}
   ],
@@ -328,6 +420,10 @@ enyo.kind({
     var i = inEvent.index;
     this.doJobClicked({index: i});
   },
+  itemLongPress: function(inSender, inEvent) {
+    var i = inEvent.index;
+    this.doJobLongPress({index: i});
+  },  
   resetSearch: function() {
     this.searchInProgress = false;
     this.results = [];

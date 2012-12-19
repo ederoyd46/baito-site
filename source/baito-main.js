@@ -16,7 +16,7 @@ enyo.kind({
     ]},
     {kind: "Panels", arrangerKind: "LeftRightArranger", margin: 0, name: "pageContentPanels", draggable:false, animate: true, fit: true, components: [
       {kind: "FittableColumns", fit: true, components: [
-        {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onAdditionSearchCompleted: "additionLoadMaps", onJobClicked: "resultsListClick"},
+        {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onAdditionSearchCompleted: "additionLoadMaps", onJobClicked: "resultsListClick", onJobLongPress: "resultsListLongPress"},
         {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [
           {name: "mapContainer", kind: "MapView", onJobClicked: "openJobItem"},
           {name: "jobview", kind: "JobDetails", onBack: "switchToMapView"}
@@ -57,6 +57,18 @@ enyo.kind({
       this.$.jobview.setJobId(jobId);
       this.$.jobview.loadJob();
     }
+    return true;
+  },
+  resultsListLongPress: function(inSender, inEvent) {
+    var item = this.$.resultList.results[inEvent.index];
+    var jobId = item.job.JobSummary.uuid;
+    
+    if (this.$.contentPanels.index != this.JOB_DETAILS) {
+      this.$.contentPanels.setIndex(this.JOB_DETAILS);
+    }
+
+    this.$.jobview.setJobId(jobId);
+    this.$.jobview.loadJob();
     return true;
   },
   switchToMapView: function(inSender, inEvent) {

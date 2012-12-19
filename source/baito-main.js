@@ -73,7 +73,6 @@ enyo.kind({
   },
   switchToMapView: function(inSender, inEvent) {
     this.$.contentPanels.setIndex(this.MAPS_VIEW);
-    return true;
   },
   openJobItem: function(inSender, inEvent) {
     this.$.jobview.setJobId(inEvent.uuid);

@@ -480,9 +480,11 @@ enyo.kind({
           center: mapLatLng,
           streetViewControl: true
         });
+        google.maps.event.trigger(this.map, 'resize');
       }
     } else {
       if (moveMap) {
+        google.maps.event.trigger(this.map, 'resize');
         this.map.panTo(mapLatLng);
       }
     }
@@ -519,6 +521,7 @@ enyo.kind({
       }
     });
     if (moveMap) {
+      google.maps.event.trigger(this.map, 'resize');
       this.map.fitBounds(bounds);
     }
   },

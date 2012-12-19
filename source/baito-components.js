@@ -480,12 +480,12 @@ enyo.kind({
           center: mapLatLng,
           streetViewControl: true
         });
-        google.maps.event.trigger(this.map, 'resize');
+        this.triggerResize();
       }
     } else {
       if (moveMap) {
         google.maps.event.trigger(this.map, 'resize');
-        this.map.panTo(mapLatLng);
+        this.triggerResize();
       }
     }
     var bounds = new google.maps.LatLngBounds();
@@ -521,9 +521,12 @@ enyo.kind({
       }
     });
     if (moveMap) {
-      google.maps.event.trigger(this.map, 'resize');
+      this.triggerResize();
       this.map.fitBounds(bounds);
     }
+  },
+  triggerResize: function() {
+    google.maps.event.trigger(this.map, 'resize');
   },
   isMarkerCreated: function(uuid) {
     for (i=0;i<this.markerCreated.length; i++) {

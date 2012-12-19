@@ -16,6 +16,7 @@ enyo.kind({
           {name: "logoutItem", content: "Logout", ontap: "logout"},
       ]},
     ]},
+    {kind: "Signals", onAuthenticationChange: "refreshMenuItems"}
   ],
   create: function() {
     this.inherited(arguments);
@@ -58,7 +59,6 @@ enyo.kind({
     return true;
   },
   loginComplete: function(inSender, inEvent) {
-    this.refreshMenuItems();
     this.$.loginContainer.hide();
     return true;
   },
@@ -69,7 +69,7 @@ enyo.kind({
     return true;
   },
   processLogout: function(inRequest, inResponse) {
-    this.refreshMenuItems();
+    enyo.Signals.send("onAuthenticationChange");
   },
   register: function(inSender, inEvent) {
     this.createComponent({name: "registerContainer", kind: "RegisterContainer", floating: true, centered: true, onRegisterComplete: "registerComplete", onHide: "destroyRegister", scrim: true, scrimWhenModal: false});
@@ -143,6 +143,8 @@ enyo.kind({
       });
       return true;
     }
+    
+    enyo.Signals.send("onAuthenticationChange");
     this.doLoginComplete({name: inResponse.UserResponse.user.name});
   }
 });
@@ -233,6 +235,7 @@ enyo.kind({
       });
       return;
     }
+    enyo.Signals.send("onAuthenticationChange");
     this.doRegisterComplete();
   }
 });

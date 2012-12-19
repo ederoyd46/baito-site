@@ -56,6 +56,7 @@ enyo.kind({
     ]},
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", classes: "job-toolbar", components: [
       {kind: "onyx.Button", content: "Back", ontap:"backButtonTap"},
+      {kind: "FavouriteButton", name: "favourite"},
     ]},
   ],
   backButtonTap: function(inSender, inEvent) {
@@ -97,7 +98,71 @@ enyo.kind({
     this.$.contactTelephone.setContent(job.contactTelephone);
     this.$.address.setContent(job.address);
     this.$.postCode.setContent(job.postalCode);
+    this.$.favourite.setJobId(job.uuid);
+    this.$.favourite.refreshContent();
     this.doJobLoaded();
+  }
+});
+
+
+enyo.kind({
+  name: "FavouriteButton",
+  kind: "onyx.Button",
+  content: "",
+  published: {
+    jobId: undefined,
+  },
+  handlers: {
+    ontap: "toggleFavourite",
+  },
+  components: [
+    {kind: "Signals", onAuthenticationChange: "refreshContent"}
+  ],
+  toggleFavourite: function(inSender, inEvent) {
+    var req;
+    if (this.getContent() == "Favourite") {
+      req = new enyo.Ajax({url: "/api/user/favourite"});
+    } else {
+      req = new enyo.Ajax({url: "/api/user/unfavourite"});
+    }
+    
+    req.response(enyo.bind(this, "processToggleFavourite"));
+    req.go({jobid: this.jobId});
+    return true;
+  },
+  processToggleFavourite: function(inRequest, inResponse) {
+    this.refreshContent();
+  },
+  create: function() {
+    this.inherited(arguments);
+    this.refreshContent();
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  refreshContent: function() {
+    if (!this.jobId) {
+      this.hide();
+      return;
+    }
+    var req = new enyo.Ajax({url: "/api/user/view/favourites"});
+    req.response(enyo.bind(this, "processRefreshContent"));
+    req.go();
+  },
+  processRefreshContent: function(inRequest,inResponse) {
+    if (inResponse.JobsResponse.success) {
+      this.show();
+      for (i=0; i<inResponse.JobsResponse.jobs.length; i++) {
+        var job = inResponse.JobsResponse.jobs[i];
+        if (job.JobSummary.uuid == this.jobId) {
+          this.setContent("Unfavourite");
+          return;
+        }
+      }
+      this.setContent("Favourite");
+    } else {
+      this.hide();
+    }
   }
 });
 

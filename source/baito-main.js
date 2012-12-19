@@ -26,22 +26,26 @@ enyo.kind({
   ],
   refreshSpacer: function(inSender, inEvent) {
     this.resized();
+    return true;
   },
   search: function(inSender, inEvent) {
     this.$.pageContentPanels.setIndex(this.SEARCH_VIEW);
     this.$.resultList.search(this.$.searchInput.getValue());
+    return true;
   },
   loadMaps: function(inSender, inEvent) {
     var response = this.$.resultList.lastSearchResponse;
     this.$.mapContainer.setMapData(response);
     this.$.contentPanels.setIndex(this.MAPS_VIEW);
     this.$.mapContainer.loadMap(true);
+    return true;
   },
   additionLoadMaps: function(inSender, inEvent) {
     var response = this.$.resultList.lastSearchResponse;
     this.$.mapContainer.setMapData(response);
     // this.$.contentPanels.setIndex(0);
     this.$.mapContainer.loadMap(false);
+    return true;
   },
   resultsListClick: function(inSender, inEvent) {
     var item = this.$.resultList.results[inEvent.index];
@@ -53,14 +57,17 @@ enyo.kind({
       this.$.jobview.setJobId(jobId);
       this.$.jobview.loadJob();
     }
+    return true;
   },
   switchToMapView: function(inSender, inEvent) {
     this.$.contentPanels.setIndex(this.MAPS_VIEW);
+    return true;
   },
   openJobItem: function(inSender, inEvent) {
     this.$.jobview.setJobId(inEvent.uuid);
     this.$.jobview.loadJob();
     this.$.contentPanels.setIndex(this.JOB_DETAILS);
+    return true;
   }
 
 });

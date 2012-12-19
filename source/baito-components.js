@@ -57,6 +57,7 @@ enyo.kind({
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", classes: "job-toolbar", components: [
       {kind: "onyx.Button", content: "Back", ontap:"backButtonTap"},
       {kind: "FavouriteButton", name: "favourite"},
+      {kind: "ApplyButton", name: "apply"},
     ]},
   ],
   backButtonTap: function(inSender, inEvent) {
@@ -100,6 +101,8 @@ enyo.kind({
     this.$.postCode.setContent(job.postalCode);
     this.$.favourite.setJobId(job.uuid);
     this.$.favourite.refreshContent();
+    this.$.apply.setJobId(job.uuid);
+    this.$.apply.refreshContent();
     this.doJobLoaded();
   }
 });
@@ -165,6 +168,70 @@ enyo.kind({
     }
   }
 });
+
+
+enyo.kind({
+  name: "ApplyButton",
+  kind: "onyx.Button",
+  content: "Apply",
+  published: {
+    jobId: undefined,
+  },
+  handlers: {
+    ontap: "applyForJob",
+  },
+  components: [
+    {kind: "Signals", onAuthenticationChange: "refreshContent"}
+  ],
+  applyForJob: function(inSender, inEvent) {
+    // var req;
+    // if (this.getContent() == "Favourite") {
+    //   req = new enyo.Ajax({url: "/api/user/favourite"});
+    // } else {
+    //   req = new enyo.Ajax({url: "/api/user/unfavourite"});
+    // }
+    // 
+    // req.response(enyo.bind(this, "processToggleFavourite"));
+    // req.go({jobid: this.jobId});
+    return true;
+  },
+  processApplyForJob: function(inRequest, inResponse) {
+    this.refreshContent();
+  },
+  create: function() {
+    this.inherited(arguments);
+    this.refreshContent();
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  refreshContent: function() {
+    if (!this.jobId) {
+      this.hide();
+      return;
+    }
+    var req = new enyo.Ajax({url: "/api/user/view/applications"});
+    req.response(enyo.bind(this, "processRefreshContent"));
+    req.go();
+  },
+  processRefreshContent: function(inRequest,inResponse) {
+    if (inResponse.JobApplicationsResponse.success) {
+      this.show();
+      for (i=0; i<inResponse.JobApplicationsResponse.jobApplications.length; i++) {
+        var job = inResponse.JobApplicationsResponse.jobApplications[i];
+        if (job.ViewJobApplication.jobId == this.jobId) {
+          this.setDisabled(true);
+          return;
+        }
+      }
+      this.setDisabled(false);
+    } else {
+      this.hide();
+    }
+  }
+});
+
+
 
 enyo.kind({
   name: "SearchList",

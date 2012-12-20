@@ -38,9 +38,14 @@
     margin-top: 5px;
 }
 
-.errors {
-}
-
 .error {
     color: red;
+}
+
+.apply-container {
+    padding: 10px;
+}
+
+.apply-input {
+    width: 100%;
 }

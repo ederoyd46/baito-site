@@ -239,3 +239,236 @@ enyo.kind({
     this.doRegisterComplete();
   }
 });
+
+
+enyo.kind({
+  name: "FavouriteButton",
+  kind: "onyx.Button",
+  content: "",
+  published: {
+    jobId: undefined,
+  },
+  handlers: {
+    ontap: "toggleFavourite",
+  },
+  components: [
+    {kind: "Signals", onAuthenticationChange: "refreshContent"}
+  ],
+  toggleFavourite: function(inSender, inEvent) {
+    var req;
+    if (this.getContent() == "Favourite") {
+      req = new enyo.Ajax({url: "/api/user/favourite"});
+    } else {
+      req = new enyo.Ajax({url: "/api/user/unfavourite"});
+    }
+    
+    req.response(enyo.bind(this, "processToggleFavourite"));
+    req.go({jobid: this.jobId});
+    return true;
+  },
+  processToggleFavourite: function(inRequest, inResponse) {
+    if (inResponse.UserResponse.success) {
+      this.refreshContent();
+    } else {
+      enyo.Signals.send("onAuthenticationChange");
+    }
+  },
+  create: function() {
+    this.inherited(arguments);
+    this.refreshContent();
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  refreshContent: function() {
+    if (!this.jobId) {
+      this.hide();
+      return;
+    }
+    var req = new enyo.Ajax({url: "/api/user/view/favourites"});
+    req.response(enyo.bind(this, "processRefreshContent"));
+    req.go();
+  },
+  processRefreshContent: function(inRequest,inResponse) {
+    if (inResponse.JobsResponse.success) {
+      this.show();
+      for (i=0; i<inResponse.JobsResponse.jobs.length; i++) {
+        var job = inResponse.JobsResponse.jobs[i];
+        if (job.JobSummary.uuid == this.jobId) {
+          this.setContent("Unfavourite");
+          return;
+        }
+      }
+      this.setContent("Favourite");
+    } else {
+      this.hide();
+    }
+  }
+});
+
+
+enyo.kind({
+  name: "ApplyButton",
+  kind: "onyx.Button",
+  content: "Apply",
+  published: {
+    jobId: undefined,
+    jobTitle: undefined,
+  },
+  handlers: {
+    ontap: "applyForJob",
+  },
+  components: [
+    {kind: "Signals", onAuthenticationChange: "refreshContent"}
+  ],
+  applyForJob: function(inSender, inEvent) {
+    if (inSender.kind == 'ApplyButton') {
+      this.createComponent({name: "applyContainer", kind: "ApplyContainer", floating: true, centered: true, onHide: "destroyApply", scrim: true, scrimWhenModal: false, onApplyComplete: "applyCompleted"}).render();
+      this.$.applyContainer.setJobId(this.jobId);
+      this.$.applyContainer.setJobTitle(this.jobTitle);
+      this.$.applyContainer.show();
+    }
+    return true;
+  },
+  destroyApply: function(inSender, inEvent) {
+    this.$.applyContainer.destroyComponents(); //otherwise the reference isn't gc'd for some reason
+    this.$.applyContainer.destroy();
+    return true;
+  },
+  applyCompleted: function(inSender, inEvent) {
+    this.$.applyContainer.hide();
+    this.refreshContent();
+    return true;    
+  },
+  create: function() {
+    this.inherited(arguments);
+    this.refreshContent();
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  refreshContent: function() {
+    if (!this.jobId) {
+      this.hide();
+      return;
+    }
+    var req = new enyo.Ajax({url: "/api/user/view/applications"});
+    req.response(enyo.bind(this, "processRefreshContent"));
+    req.go();
+  },
+  processRefreshContent: function(inRequest,inResponse) {
+    if (inResponse.JobApplicationsResponse.success) {
+      this.show();
+      for (i=0; i<inResponse.JobApplicationsResponse.jobApplications.length; i++) {
+        var job = inResponse.JobApplicationsResponse.jobApplications[i];
+        if (job.ViewJobApplication.jobId == this.jobId) {
+          this.setDisabled(true);
+          return;
+        }
+      }
+      this.setDisabled(false);
+    } else {
+      this.hide();
+    }
+  }
+});
+
+
+
+
+enyo.kind({
+  name: "ApplyContainer",
+  kind: "onyx.Popup",
+  classes: "apply-container",
+  published: {
+    jobId: undefined,
+    jobTitle: undefined,
+    birthDate: undefined,
+  },
+  events: {
+    onApplyComplete: ""
+  },
+  components: [
+    {name: "applyErrors", classes: "errors"},
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "applyName", kind: "onyx.Input", placeholder: "Name", classes: "apply-input", onkeypress: "inputChange"}
+    ]},
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "applyEmail", kind: "onyx.Input", placeholder: "Email", type: "email", classes: "apply-input", onkeypress: "inputChange"}
+    ]},
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "applyTelephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "apply-input", onkeypress: "inputChange"}
+    ]},
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+        {name: "applyAdditional", kind: "onyx.TextArea", placeholder: "Tell us about yourself...",  classes: "apply-input", onkeypress: "inputChange"}
+    ]},
+    {tag: "br"},
+    {kind: "onyx.Button", content: "Submit Application", ontap: "apply"}
+  ],
+  create: function() {
+    this.inherited(arguments);
+    this.prepopulateUser();
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  prepopulateUser: function() {
+    var req = new enyo.Ajax({url: "/api/user/whoami", method: "GET"});
+    req.response(enyo.bind(this, "processPrepopulateUser"));
+    req.go();
+  },
+  processPrepopulateUser: function(inRequest, inResponse) {
+    if (inResponse.UserResponse.success) {
+      var user = inResponse.UserResponse.user;
+      this.$.applyName.setValue(user.name);
+      this.$.applyEmail.setValue(user.email);
+      this.$.applyTelephone.setValue(user.phone);
+      this.setBirthDate(user.birthDate.match(/[0-9]+-[0-9]+-[0-9]+/));
+    } else {
+      enyo.Signals.send("onAuthenticationChange");
+    }
+  },
+  inputChange: function(inSender, inEvent) {
+    if (inEvent.keyCode == 13) {
+      this.register(inSender, inEvent);
+    }
+  },
+  apply: function(inSender, inEvent) {
+    this.$.applyErrors.destroyComponents();
+    
+    var jaReqObj = "";
+    
+    if (this.$.applyName.getValue().length > 0 ) {
+      jaReqObj += "&name=" + this.$.applyName.getValue();
+    }
+    if (this.$.applyEmail.getValue().length > 0 ) {
+      jaReqObj += "&email=" + this.$.applyEmail.getValue();
+    }
+    if (this.$.applyTelephone.getValue().length > 0 ) {
+      jaReqObj += "&phone=" + this.$.applyTelephone.getValue();
+    }
+    if (this.$.applyAdditional.getValue().length > 0 ) {
+      jaReqObj += "&additional=" + this.$.applyAdditional.getValue();
+    }
+    
+    jaReqObj += "&birthDate=" + this.birthDate;
+    jaReqObj += "&jobid=" + this.jobId;
+    jaReqObj += "&jobtitle=" + this.jobTitle;
+    
+    var req = new enyo.Ajax({url: "/api/job/apply", method: "POST", postBody: jaReqObj, sync: true});
+    req.response(enyo.bind(this, "processApply"));
+    req.go();
+  },
+  processApply: function(inRequest, inResponse) {
+    if (!inResponse.JobApplicationResponse.success) {
+      var errorContainer = this.$.applyErrors.createComponent({tag: "ul"});
+      errorContainer.render();
+      var validationErrors = inResponse.JobApplicationResponse.errors;
+      validationErrors.forEach(function(e) {
+        errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
+      });
+      return;
+    }
+    this.doApplyComplete();
+  }
+});

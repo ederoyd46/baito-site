@@ -17,10 +17,13 @@ enyo.kind({
     {kind: "Panels", arrangerKind: "LeftRightArranger", margin: 0, name: "pageContentPanels", draggable:false, animate: true, fit: true, components: [
       {kind: "FittableColumns", fit: true, components: [
         {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onAdditionSearchCompleted: "additionLoadMaps", onJobClicked: "resultsListClick", onJobLongPress: "resultsListLongPress", onNoResultsFound: "noSearchResultsFound"},
-        {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [
+        {kind: "Panels", name: "contentPanels", draggable:false, animate: false, fit: true, components: [
           {name: "mapContainer", kind: "MapView", onJobClicked: "openJobItem"},
           {name: "jobview", kind: "JobDetails", onBack: "switchToMapView"}
         ]}
+      ]},
+      {kind: "FittableColumns", fit: true, components: [
+        {contents: "my account"},
       ]},
     ]},
     {name: "noResultsFound", kind: "onyx.Popup", style: "padding: 10px", floating: true, centered: true, scrim: true, scrimWhenModal: false, components:[

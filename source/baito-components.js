@@ -55,13 +55,14 @@ enyo.kind({
       {style: "height: 60px"} //Spacer
     ]},
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", classes: "job-toolbar", components: [
-      {kind: "onyx.Button", content: "Back", ontap:"backButtonTap"},
+      {kind: "onyx.Button", content: "Back", onmouseup:"backButtonTap"},
       {kind: "FavouriteButton", name: "favourite"},
       {kind: "ApplyButton", name: "apply"},
     ]},
   ],
   backButtonTap: function(inSender, inEvent) {
-    this.doBack();
+    this.bubble("onBack");
+    return true;
   },
   create: function() {
     this.inherited(arguments);
@@ -239,6 +240,9 @@ enyo.kind({
   published: {
       mapData: "",
   },
+  handlers: {
+    onBack: "fakeOnBack",
+  },
   components: [
     {name: "mapview", tag: "div", classes: "map-view"}
   ],
@@ -247,7 +251,10 @@ enyo.kind({
   },
   destroy: function() {
     this.inherited(arguments);
-  },  
+  },
+  fakeOnBack: function(inSender, inEvent) {
+    return true;
+  },
   loadMap: function(moveMap) {
     var data = this.mapData;
 

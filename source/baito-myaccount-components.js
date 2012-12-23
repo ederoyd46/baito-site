@@ -1,8 +1,102 @@
 enyo.kind({
+  name: "MyAccountContainer",
+  kind: "Control",
+  FAVOURITES_OPTION: 0,
+  FAVOURITES_VIEW: 1,
+  APPLICATIONS_OPTION: 1,
+  APPLICATIONS_VIEW: 2,
+  CREATED_OPTION: 2,
+  CREATED_VIEW: 3,
+  MYDETAILS_OPTION: 3,
+  MYDETAILS_VIEW: 4,
+  components: [
+    {kind: "FittableColumns", fit: true, components: [
+      {name: "myAccountOptionList", touch: true, onSetupItem: "setupItem", classes: "search-result-list", kind: "List", components: [
+        {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
+          {name: "myAccountOptionTitle", tag: "span"}
+        ]}
+      ]},
+      {kind: "Panels", name: "myAccountPanels", draggable:false, animate: true, fit: true, components: [
+        {content: "my account page"},
+        {name: "favouritesList", kind: "FavouritesList"},
+      ]},
+    ]},
+  ],
+  create: function() {
+    this.inherited(arguments);
+    this.refreshMenuItems();
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  menuOptions: [{name: "Favourite Jobs"}, {name: "Applications"}, {name: "Created Jobs"}, {name: "My Details"}],
+  refreshMenuItems: function() {
+    this.$.myAccountOptionList.setCount(this.menuOptions.length);
+  },
+  setupItem: function(inSender, inEvent) {
+    var item = this.menuOptions[inEvent.index];
+    var entry = item.name;
+    this.$.myAccountOptionTitle.setContent(entry);
+  },
+  itemClicked: function(inSender, inEvent) {
+    if (this.FAVOURITES_OPTION == inEvent.index) {
+      this.$.favouritesList.refreshItems();
+      this.$.myAccountPanels.setIndex(this.FAVOURITES_VIEW);
+    }
+
+    return true;
+  }
+  
+});
+
+enyo.kind({
+  name: "FavouritesList",
+  kind: "List",
+  classes: "favourites-result-list",
+  results: [],
+  components: [
+    {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
+      {name: "myFavouriteTitle", tag: "span"}
+    ]}
+  ],
+  handlers: {
+    onSetupItem: "setupItem", 
+  },
+  create: function() {
+    this.inherited(arguments);
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  refreshItems: function() {
+    var req = new enyo.Ajax({url: "/api/user/view/favourites", method: "GET", sync: true});
+    req.response(enyo.bind(this, "processRefreshItems"));
+    req.go();
+  },
+  processRefreshItems: function(inRequest, inResponse) {
+    if (!inResponse.JobsResponse.success) {
+      enyo.Signals.send("onAuthenticationChange");
+      return;
+    }
+    this.results = inResponse.JobsResponse.jobs;
+    this.setCount(this.results.length);
+    this.reset();
+  },
+  setupItem: function(inSender, inEvent) {
+    var item = this.results[inEvent.index];
+    console.log(item.JobSummary.title);
+    var entry = item.JobSummary.title;
+    this.$.myFavouriteTitle.setContent(entry);
+  },
+});
+
+
+enyo.kind({
   name: "ActionMenu",
   kind: "Control",
   events: {
-    onMenuActionPerformed: ""
+    onMenuActionPerformed: "",
+    onMyAccount: "",
   },
   components: [
     {name: "welcomeItem", content: "", classes: "welcome-item"},
@@ -10,7 +104,7 @@ enyo.kind({
       {name: "menuActions", content: "Actions"},
       {kind: "onyx.Menu", components: [
           {name: "loginItem", content: "Login", ontap: "login"},
-          {name: "myaccountItem", content: "My Account"},
+          {name: "myaccountItem", content: "My Account", ontap: "myAccountClick"},
           {name: "dividerItem", classes: "onyx-menu-divider"},
           {name: "registerItem", content: "Register", ontap: "register"},
           {name: "logoutItem", content: "Logout", ontap: "logout"},
@@ -24,6 +118,9 @@ enyo.kind({
   },
   destroy: function() {
     this.inherited(arguments);
+  },
+  myAccountClick: function(inSender, inEvent) {
+    this.doMyAccount();
   },
   refreshMenuItems: function() {
     var req = new enyo.Ajax({url: "/api/user/whoami", method: "GET", sync: true});

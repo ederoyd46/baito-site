@@ -55,12 +55,12 @@ enyo.kind({
       {style: "height: 60px"} //Spacer
     ]},
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", classes: "job-toolbar", components: [
-      {kind: "onyx.Button", content: "Back", onmouseup:"backButtonTap"},
+      {kind: "onyx.Button", content: "Back", onclick:"backButtonClick"},
       {kind: "FavouriteButton", name: "favourite"},
       {kind: "ApplyButton", name: "apply"},
     ]},
   ],
-  backButtonTap: function(inSender, inEvent) {
+  backButtonClick: function(inSender, inEvent) {
     this.bubble("onBack");
     return true;
   },

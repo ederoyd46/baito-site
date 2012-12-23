@@ -191,6 +191,9 @@ enyo.kind({
   events: {
     onLoginComplete: ""
   },
+  handlers: {
+    onShow: "setFocus"
+  },
   components: [
       {name: "loginErrors", classes: "errors"},
       {kind: "onyx.InputDecorator", classes: "login-inputs", components: [
@@ -201,9 +204,12 @@ enyo.kind({
       ]},
       {tag:"br"},
       {classes: "login-button", components: [
-        {name: "login", kind: "onyx.Button", content: "Login", ontap: "login"}
+        {name: "login", kind: "onyx.Button", content: "Login", onclick: "login"}
       ]}
   ],
+  setFocus: function(inSender, inEvent) {
+    this.$.username.focus();
+  },
   inputChange: function(inSender, inEvent) {
     if (inEvent.keyCode == 13) {
       this.login(inSender, inEvent);
@@ -254,6 +260,9 @@ enyo.kind({
   events: {
     onRegisterComplete: ""
   },
+  handlers: {
+    onShow: "setFocus"
+  },
   components: [
     {name: "registerErrors", classes: "errors"},
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
@@ -272,8 +281,11 @@ enyo.kind({
       {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "register-input", onkeypress: "inputChange"}
     ]},
     {name: "registerDateOfBirth", kind: "germboy.DateScroller", minYear: 1900, rangeYears: 114},
-    {kind: "onyx.Button", content: "Register", classes: "register-button", ontap: "register"}
+    {kind: "onyx.Button", content: "Register", classes: "register-button", onclick: "register"}
   ],
+  setFocus: function(inSender, inEvent) {
+    this.$.registerUsername.focus();
+  },
   create: function() {
     this.inherited(arguments);
   },
@@ -346,7 +358,7 @@ enyo.kind({
     jobId: undefined,
   },
   handlers: {
-    ontap: "toggleFavourite",
+    onclick: "toggleFavourite",
   },
   components: [
     {kind: "Signals", onAuthenticationChange: "refreshContent"}
@@ -413,7 +425,7 @@ enyo.kind({
     jobTitle: undefined,
   },
   handlers: {
-    ontap: "applyForJob",
+    onclick: "applyForJob",
   },
   components: [
     {kind: "Signals", onAuthenticationChange: "refreshContent"}
@@ -500,7 +512,7 @@ enyo.kind({
         {name: "applyAdditional", kind: "onyx.TextArea", placeholder: "Tell us about yourself...",  classes: "apply-input", onkeypress: "inputChange"}
     ]},
     {tag: "br"},
-    {kind: "onyx.Button", content: "Submit Application", ontap: "apply"}
+    {kind: "onyx.Button", content: "Submit Application", onclick: "apply"}
   ],
   create: function() {
     this.inherited(arguments);

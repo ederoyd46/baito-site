@@ -9,7 +9,7 @@ enyo.kind({
   JOB_DETAILS: 1,
   components: [
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", components: [
-      {kind: "onyx.Button", content: "Go", ontap: "search"},
+      {kind: "onyx.Button", content: "Go", onclick: "search"},
       {kind: "onyx.InputDecorator", components: [
         {kind: "onyx.Input", name: "searchInput", value: "Leeds", classes: "search-input", placeholder: "search for jobs in...", onkeypress: "inputChange"}
       ]},
@@ -31,6 +31,12 @@ enyo.kind({
       {content: "No Results Found..."}
     ]},
   ],
+  printtap: function(inSender, inEvent) {
+    alert("tap");
+  },
+  printclick: function(inSender, inEvent) {
+    alert("click");
+  },
   refreshSpacer: function(inSender, inEvent) {
     this.resized();
     return true;
@@ -85,7 +91,6 @@ enyo.kind({
 
     if (this.$.contentPanels.index != this.JOB_DETAILS) {
       this.$.contentPanels.setIndex(this.JOB_DETAILS);
-      // this.$.contentPanels.draggable = true;
     }
 
     return true;
@@ -93,15 +98,12 @@ enyo.kind({
   switchToMapView: function(inSender, inEvent) {
     this.$.contentPanels.setIndex(this.MAPS_VIEW);
     this.$.mapContainer.triggerResize();
-    // this.$.contentPanels.draggable = false;
-    
     return true;
   },
   openJobItem: function(inSender, inEvent) {
     this.$.jobview.setJobId(inEvent.uuid);
     this.$.jobview.loadJob();
     this.$.contentPanels.setIndex(this.JOB_DETAILS);
-    // this.$.contentPanels.draggable = true;
     return true;
   }
 

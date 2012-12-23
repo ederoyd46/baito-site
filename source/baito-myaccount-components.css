@@ -19,7 +19,7 @@
 .action-menu {
     display: inline-block;
 }
-.welcome-item {
+.welcome-item { 
     display: inline-block;
     margin-right: 10px;
 }
@@ -48,4 +48,12 @@
 
 .apply-input {
     width: 100%;
+}
+
+.favourites-result-list {
+}
+
+.my-account-panels {
+  height: 100%;
+  width: 100%;
 }

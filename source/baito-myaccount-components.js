@@ -1,6 +1,6 @@
 enyo.kind({
   name: "MyAccountContainer",
-  kind: "Control",
+  kind: "FittableColumns",
   FAVOURITES_OPTION: 0,
   FAVOURITES_VIEW: 1,
   APPLICATIONS_OPTION: 1,
@@ -10,17 +10,15 @@ enyo.kind({
   MYDETAILS_OPTION: 3,
   MYDETAILS_VIEW: 4,
   components: [
-    {kind: "FittableColumns", fit: true, components: [
       {name: "myAccountOptionList", touch: true, onSetupItem: "setupItem", classes: "search-result-list", kind: "List", components: [
         {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
           {name: "myAccountOptionTitle", tag: "span"}
         ]}
       ]},
-      {kind: "Panels", name: "myAccountPanels", draggable:false, animate: true, fit: true, components: [
-        {content: "my account page"},
-        {name: "favouritesList", kind: "FavouritesList"},
+      {kind: "Panels", name: "myAccountPanels", classes: "my-account-panels", draggable:false, components: [
+        {content: "My Account"},
+        {name: "favouritesList", kind: "FavouritesList", touch: true}
       ]},
-    ]},
   ],
   create: function() {
     this.inherited(arguments);
@@ -42,6 +40,7 @@ enyo.kind({
     if (this.FAVOURITES_OPTION == inEvent.index) {
       this.$.favouritesList.refreshItems();
       this.$.myAccountPanels.setIndex(this.FAVOURITES_VIEW);
+      this.$.myAccountPanels.resized();
     }
 
     return true;
@@ -84,7 +83,6 @@ enyo.kind({
   },
   setupItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
-    console.log(item.JobSummary.title);
     var entry = item.JobSummary.title;
     this.$.myFavouriteTitle.setContent(entry);
   },

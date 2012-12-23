@@ -1,27 +1,4 @@
 .search-input {
     width: 200px;
 }
-.search-result-entry {
-  padding: 10px;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid black;
-  background-color: #333333;
-  color: white;
-}
-
-.search-result-list {
-  width: 25%;
-  background-color: #333333;
-}
-
-.favourites-result-list {
-  background-color: yellow;
-}
-
-
-
-.onyx-highlight {
-  background-color: grey;
-}
 

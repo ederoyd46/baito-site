@@ -31,12 +31,6 @@ enyo.kind({
       {content: "No Results Found..."}
     ]},
   ],
-  printtap: function(inSender, inEvent) {
-    alert("tap");
-  },
-  printclick: function(inSender, inEvent) {
-    alert("click");
-  },
   refreshSpacer: function(inSender, inEvent) {
     this.resized();
     return true;

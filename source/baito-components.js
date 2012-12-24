@@ -214,8 +214,7 @@ enyo.kind({
     this.$.jobTitle.setContent(entry);
   },
   itemClicked: function(inSender, inEvent) {
-    var i = inEvent.index;
-    this.doJobClicked({index: i});
+    this.bubble("onJobClicked", inEvent, inSender);
   },
   itemLongPress: function(inSender, inEvent) {
     var i = inEvent.index;

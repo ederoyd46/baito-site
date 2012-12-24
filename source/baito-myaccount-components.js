@@ -9,6 +9,7 @@ enyo.kind({
   CREATED_VIEW: 3,
   MYDETAILS_OPTION: 3,
   MYDETAILS_VIEW: 4,
+  JOB_DETAILS_VIEW: 5,
   components: [
       {name: "myAccountOptionList", touch: true, onSetupItem: "setupItem", classes: "search-result-list", kind: "List", components: [
         {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
@@ -17,7 +18,10 @@ enyo.kind({
       ]},
       {kind: "Panels", name: "myAccountPanels", classes: "my-account-panels", draggable:false, components: [
         {content: "My Account"},
-        {name: "favouritesList", kind: "FavouritesList", touch: true}
+        {name: "favouritesList", kind: "FavouritesList", touch: true, onFavouriteClicked: "openFavouriteJobItem"},
+        {name: "applicationsList", kind: "ApplicationsList", touch: true},
+        {name: "createdList", kind: "CreatedList", touch: true, onCreatedClicked: "openCreatedJobItem"},
+        {name: "jobDetails", kind: "JobDetails"}
       ]},
   ],
   create: function() {
@@ -38,13 +42,48 @@ enyo.kind({
   },
   itemClicked: function(inSender, inEvent) {
     if (this.FAVOURITES_OPTION == inEvent.index) {
-      this.$.favouritesList.refreshItems();
-      this.$.myAccountPanels.setIndex(this.FAVOURITES_VIEW);
-      this.$.myAccountPanels.resized();
+      this.openFavouritesList();
     }
 
+    if (this.APPLICATIONS_OPTION == inEvent.index) {
+      this.openApplicationsList();
+    }
+
+    if (this.CREATED_OPTION == inEvent.index) {
+      this.openCreatedList();
+    }
     return true;
-  }
+  },
+  openFavouritesList: function() {
+    this.$.favouritesList.refreshItems();
+    this.$.myAccountPanels.setIndex(this.FAVOURITES_VIEW);
+  },
+  openFavouriteJobItem: function(inSender, inEvent) {
+    var item = this.$.favouritesList.results[inEvent.index];
+    var jobId = item.JobSummary.uuid;
+
+    this.$.jobDetails.setJobId(jobId);
+    this.$.jobDetails.loadJob();
+    this.$.jobDetails.onBack = "openFavouritesList";
+    this.$.myAccountPanels.setIndex(this.JOB_DETAILS_VIEW);
+  },
+  openApplicationsList: function() {
+    this.$.applicationsList.refreshItems();
+    this.$.myAccountPanels.setIndex(this.APPLICATIONS_VIEW);
+  },
+  openCreatedList: function() {
+    this.$.createdList.refreshItems();
+    this.$.myAccountPanels.setIndex(this.CREATED_VIEW);
+  },
+  openCreatedJobItem: function(inSender, inEvent) {
+    var item = this.$.createdList.results[inEvent.index];
+    var jobId = item.JobSummary.uuid;
+
+    this.$.jobDetails.setJobId(jobId);
+    this.$.jobDetails.loadJob();
+    this.$.jobDetails.onBack = "openCreatedList";
+    this.$.myAccountPanels.setIndex(this.JOB_DETAILS_VIEW);
+  },
   
 });
 
@@ -52,6 +91,9 @@ enyo.kind({
   name: "FavouritesList",
   kind: "List",
   classes: "favourites-result-list",
+  events: {
+    onFavouriteClicked: "",
+  },
   results: [],
   components: [
     {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
@@ -81,6 +123,9 @@ enyo.kind({
     this.setCount(this.results.length);
     this.reset();
   },
+  itemClicked: function(inSender, inEvent) {
+    this.bubble("onFavouriteClicked", inEvent, inSender);
+  },
   setupItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
     var entry = item.JobSummary.title;
@@ -88,6 +133,92 @@ enyo.kind({
   },
 });
 
+enyo.kind({
+  name: "ApplicationsList",
+  kind: "List",
+  classes: "applications-result-list",
+  results: [],
+  components: [
+    {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
+      {name: "myApplicationTitle", tag: "span"}
+    ]}
+  ],
+  handlers: {
+    onSetupItem: "setupItem", 
+  },
+  create: function() {
+    this.inherited(arguments);
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  refreshItems: function() {
+    var req = new enyo.Ajax({url: "/api/user/view/applications", method: "GET", sync: true});
+    req.response(enyo.bind(this, "processRefreshItems"));
+    req.go();
+  },
+  processRefreshItems: function(inRequest, inResponse) {
+    if (!inResponse.JobApplicationsResponse.success) {
+      enyo.Signals.send("onAuthenticationChange");
+      return;
+    }
+    this.results = inResponse.JobApplicationsResponse.jobApplications;
+    this.setCount(this.results.length);
+    this.reset();
+  },
+  setupItem: function(inSender, inEvent) {
+    var item = this.results[inEvent.index];
+    var entry = item.ViewJobApplication.jobTitle;
+    this.$.myApplicationTitle.setContent(entry);
+  },
+});
+
+
+enyo.kind({
+  name: "CreatedList",
+  kind: "List",
+  classes: "created-result-list",
+  events: {
+    onCreatedClicked: ""
+  },
+  results: [],
+  components: [
+    {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
+      {name: "myCreatedTitle", tag: "span"}
+    ]}
+  ],
+  handlers: {
+    onSetupItem: "setupItem", 
+  },
+  create: function() {
+    this.inherited(arguments);
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  refreshItems: function() {
+    var req = new enyo.Ajax({url: "/api/user/view/created", method: "GET", sync: true});
+    req.response(enyo.bind(this, "processRefreshItems"));
+    req.go();
+  },
+  processRefreshItems: function(inRequest, inResponse) {
+    if (!inResponse.JobsResponse.success) {
+      enyo.Signals.send("onAuthenticationChange");
+      return;
+    }
+    this.results = inResponse.JobsResponse.jobs;
+    this.setCount(this.results.length);
+    this.reset();
+  },
+  itemClicked: function(inSender, inEvent) {
+    this.bubble("onCreatedClicked", inEvent, inSender);
+  },
+  setupItem: function(inSender, inEvent) {
+    var item = this.results[inEvent.index];
+    var entry = item.JobSummary.title;
+    this.$.myCreatedTitle.setContent(entry);
+  },
+});
 
 enyo.kind({
   name: "ActionMenu",

@@ -226,6 +226,7 @@ enyo.kind({
   events: {
     onMenuActionPerformed: "",
     onMyAccount: "",
+    onLogout: ""
   },
   components: [
     {name: "welcomeItem", content: "", classes: "welcome-item"},
@@ -292,6 +293,7 @@ enyo.kind({
     var req = new enyo.Ajax({url: "/api/user/logout", method: "GET", sync: true});
     req.response(enyo.bind(this, "processLogout"));
     req.go();
+    this.bubble("onLogout");
     return true;
   },
   processLogout: function(inRequest, inResponse) {
@@ -668,7 +670,7 @@ enyo.kind({
   },
   inputChange: function(inSender, inEvent) {
     if (inEvent.keyCode == 13) {
-      this.register(inSender, inEvent);
+      this.apply(inSender, inEvent);
     }
   },
   apply: function(inSender, inEvent) {

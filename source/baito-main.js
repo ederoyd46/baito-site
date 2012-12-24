@@ -14,7 +14,7 @@ enyo.kind({
         {kind: "onyx.Input", name: "searchInput", value: "Leeds", classes: "search-input", placeholder: "search for jobs in...", onkeypress: "inputChange"}
       ]},
       { name: "menuSpacer", fit: true },
-      {kind: "ActionMenu", name: "actionMenu", onMenuActionPerformed: "refreshSpacer", onMyAccount: "switchToMyAccount"},
+      {kind: "ActionMenu", name: "actionMenu", onMenuActionPerformed: "refreshSpacer", onMyAccount: "switchToMyAccount", onLogout: "switchToHomePage"},
     ]},
     {kind: "Panels", name: "pageContentPanels", draggable:false, animate: true, fit: true, components: [
       {content: "Introduction to baito"},
@@ -40,6 +40,9 @@ enyo.kind({
       this.search(inSender, inEvent);
     }
   },  
+  switchToHomePage: function(inSender, inEvent) {
+    this.$.pageContentPanels.setIndex(this.INITIAL_VIEW);
+  },
   switchToMyAccount: function(inSender, inEvent) {
     this.$.pageContentPanels.setIndex(this.MYACCOUNT_VIEW);
   },

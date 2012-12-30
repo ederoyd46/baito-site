@@ -2,7 +2,7 @@ enyo.kind({
   name: "JobDetails",
   kind: "Control",
   published: {
-      jobId: "",
+      jobId: undefined,
   },
   events: {
     onJobLoaded: "",
@@ -10,6 +10,10 @@ enyo.kind({
     onJobResponseError: "",
     onBack: ""
   },
+  handlers: {
+    onJobLoaded: "loadEditButton",
+  },
+  loadedJobId: undefined,
   components: [
     {name: "jobContainer", kind: "Scroller", touch: true, classes: "job-container", components: [
       {kind: "onyx.Groupbox", components: [
@@ -58,6 +62,7 @@ enyo.kind({
       {kind: "onyx.Button", content: "Back", onclick:"backButtonClick"},
       {kind: "FavouriteButton", name: "favourite"},
       {kind: "ApplyButton", name: "apply"},
+      {kind: "onyx.Button", name: "edit", content: "Edit"},
     ]},
   ],
   backButtonClick: function(inSender, inEvent) {
@@ -71,6 +76,10 @@ enyo.kind({
     this.inherited(arguments);
   },
   loadJob: function() {
+    if (this.jobId && this.loadedJobId && this.jobId == this.loadedJobId) {
+      return;
+    }
+    this.$.edit.hide();
     var req = new enyo.Ajax({url: "/api/job/view"});
     req.response(enyo.bind(this, "processLoadedJob"));
     req.go({jobid: this.jobId});
@@ -105,7 +114,30 @@ enyo.kind({
     this.$.apply.setJobId(job.uuid);
     this.$.apply.setJobTitle(job.title);
     this.$.apply.refreshContent();
+    this.loadedJobId = this.jobId;
     this.doJobLoaded();
+  },
+  loadEditButton: function() {
+    console.log("here");
+    var req = new enyo.Ajax({url: "/api/user/view/created", method: "GET", sync: true});
+    req.response(enyo.bind(this, "processLoadEditButton"));
+    req.go();
+  },
+  processLoadEditButton: function(inRequest, inResponse) {
+    if (!inResponse.JobsResponse.success) {
+      enyo.Signals.send("onAuthenticationChange");
+      return;
+    }
+    var results = inResponse.JobsResponse.jobs;
+    var currentJob = this.jobId;
+    var editButton = this.$.edit;
+    results.forEach(function(job) {
+      if (job.JobSummary.uuid == currentJob) {
+        editButton.show();
+      } else {
+        editButton.hide();
+      }
+    });
   }
 });
 

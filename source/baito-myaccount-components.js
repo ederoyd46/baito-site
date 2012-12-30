@@ -535,7 +535,7 @@ enyo.kind({
       for (i=0; i<inResponse.JobsResponse.jobs.length; i++) {
         var job = inResponse.JobsResponse.jobs[i];
         if (job.JobSummary.uuid == this.jobId) {
-          this.setContent("Unfavourite");
+          this.setContent("Un-favourite");
           return;
         }
       }

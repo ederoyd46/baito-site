@@ -18,43 +18,73 @@ enyo.kind({
     {name: "jobContainer", kind: "Scroller", touch: true, classes: "job-container", components: [
       {kind: "onyx.Groupbox", components: [
         {kind: "onyx.GroupboxHeader", content: "Title"},
-        {name: "title", style: "padding: 8px;"}
+        {name: "title", style: "padding: 8px;"},
+        {name: "titleDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+          {name: "inputTitle", kind: "onyx.Input", placeholder: "Enter Title", classes: "job-input", onkeypress: "inputChange"}
+        ]},
       ]},
       {kind: "onyx.Groupbox", components: [
         {kind: "onyx.GroupboxHeader", content: "Description"},
-        {name: "description", style: "padding: 8px;", classes: "wrap"}
+        {name: "description", style: "padding: 8px;", classes: "wrap"},
+        {name: "descriptionDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+          {name: "inputDescription", kind: "onyx.TextArea", placeholder: "Enter Description", classes: "job-input", onkeypress: "inputChange"}
+        ]},
       ]},
       {kind: "onyx.Groupbox", components: [
         {kind: "onyx.GroupboxHeader", content: "Wage (per hour)"},
-        {name: "wage", style: "padding: 8px;"}
+        {name: "wage", style: "padding: 8px;"},
+        {name: "wageDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+          {name: "inputWage", kind: "onyx.Input", placeholder: "Enter Wage", classes: "job-input", onkeypress: "inputChange"}
+        ]},
       ]},
       {kind: "onyx.Groupbox", components: [
         {kind: "onyx.GroupboxHeader", content: "Hours (per week)"},
-        {name: "hours", style: "padding: 8px;"}
+        {name: "hours", style: "padding: 8px;"},
+        {name: "hoursDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+          {name: "inputHours", kind: "onyx.Input", placeholder: "Enter Hours", classes: "job-input", onkeypress: "inputChange"}
+        ]},
       ]},
       {kind: "onyx.Groupbox", components: [
         {kind: "onyx.GroupboxHeader", content: "Company"},
-        {name: "company", style: "padding: 8px;"}
+        {name: "company", style: "padding: 8px;"},
+        {name: "companyDecorator", kind: "onyx.InputDecorator", components: [
+          {name: "inputCompany", kind: "onyx.Input", placeholder: "Enter Company", classes: "job-input", onkeypress: "inputChange"}
+        ]},
       ]},
       {kind: "onyx.Groupbox", components: [
         {kind: "onyx.GroupboxHeader", content: "Contact Name"},
-        {name: "contactName", style: "padding: 8px;"}
+        {name: "contactName", style: "padding: 8px;"},
+        {name: "contactNameDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+          {name: "inputContactName", kind: "onyx.Input", placeholder: "Enter Contact Name", classes: "job-input", onkeypress: "inputChange"}
+        ]},
       ]},
       {kind: "onyx.Groupbox", components: [
         {kind: "onyx.GroupboxHeader", content: "Contact Email"},
-        {name: "contactEmail", style: "padding: 8px;"}
+        {name: "contactEmail", style: "padding: 8px;"},
+        {name: "contactEmailDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+          {name: "inputContactEmail", kind: "onyx.Input", placeholder: "Enter Contact Email", classes: "job-input", onkeypress: "inputChange"}
+        ]},        
       ]},
       {kind: "onyx.Groupbox", components: [
         {kind: "onyx.GroupboxHeader", content: "Contact Telephone"},
-        {name: "contactTelephone", style: "padding: 8px;"}
+        {name: "contactTelephone", style: "padding: 8px;"},
+        {name: "contactTelephoneDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+          {name: "inputContactTelephone", kind: "onyx.Input", placeholder: "Enter Contact Telephone Number", classes: "job-input", onkeypress: "inputChange"}
+        ]},        
       ]},
       {kind: "onyx.Groupbox", components: [
         {kind: "onyx.GroupboxHeader", content: "Address"},
-        {name: "address", style: "padding: 8px;", classes: "wrap"}
+        {name: "address", style: "padding: 8px;", classes: "wrap"},
+        {name: "addressDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+          {name: "inputAddress", kind: "onyx.TextArea", placeholder: "Enter Description", classes: "job-input", onkeypress: "inputChange"}
+        ]},
       ]},
       {kind: "onyx.Groupbox", components: [
         {kind: "onyx.GroupboxHeader", content: "Post Code"},
-        {name: "postCode", style: "padding: 8px;"}
+        {name: "postCode", style: "padding: 8px;"},
+        {name: "postCodeDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+          {name: "inputPostCode", kind: "onyx.Input", placeholder: "Enter Post Code", classes: "job-input", onkeypress: "inputChange"}
+        ]},        
       ]},
       {style: "height: 60px"} //Spacer
     ]},
@@ -62,9 +92,16 @@ enyo.kind({
       {kind: "onyx.Button", content: "Back", onclick:"backButtonClick"},
       {kind: "FavouriteButton", name: "favourite"},
       {kind: "ApplyButton", name: "apply"},
-      {kind: "onyx.Button", name: "edit", content: "Edit"},
+      {kind: "onyx.Button", name: "edit", content: "Edit", onclick: "editButtonClick"},
     ]},
   ],
+  editButtonClick: function(inSender, inEvent) {
+    if (this.$.edit.getContent() == "Edit") {
+      this.switchToEditMode();
+    } else {
+      this.switchToViewMode();
+    }
+  },
   backButtonClick: function(inSender, inEvent) {
     this.bubble("onBack");
     return true;
@@ -80,6 +117,7 @@ enyo.kind({
       return;
     }
     this.$.edit.hide();
+    this.switchToViewMode();
     var req = new enyo.Ajax({url: "/api/job/view"});
     req.response(enyo.bind(this, "processLoadedJob"));
     req.go({jobid: this.jobId});
@@ -100,15 +138,25 @@ enyo.kind({
     
     var job = inResponse.JobResponse.job.Job;
     this.$.title.setContent(job.title);
+    this.$.inputTitle.setValue(job.title);
     this.$.description.setContent(job.description);
+    this.$.inputDescription.setValue(job.description);
     this.$.wage.setContent(job.wage);
+    this.$.inputWage.setValue(job.wage);
     this.$.hours.setContent(job.hours);
+    this.$.inputHours.setValue(job.hours);
     this.$.company.setContent(job.company);
+    this.$.inputCompany.setValue(job.company);
     this.$.contactName.setContent(job.contactName);
+    this.$.inputContactName.setValue(job.contactName);
     this.$.contactEmail.setContent(job.contactEmail);
+    this.$.inputContactEmail.setValue(job.contactEmail);
     this.$.contactTelephone.setContent(job.contactTelephone);
+    this.$.inputContactTelephone.setValue(job.contactTelephone);
     this.$.address.setContent(job.address);
+    this.$.inputAddress.setValue(job.address);
     this.$.postCode.setContent(job.postalCode);
+    this.$.inputPostCode.setValue(job.postalCode);
     this.$.favourite.setJobId(job.uuid);
     this.$.favourite.refreshContent();
     this.$.apply.setJobId(job.uuid);
@@ -117,6 +165,52 @@ enyo.kind({
     this.loadedJobId = this.jobId;
     this.doJobLoaded();
   },
+  switchToEditMode: function() {
+    this.$.title.hide();
+    this.$.titleDecorator.show();
+    this.$.description.hide();
+    this.$.descriptionDecorator.show();
+    this.$.wage.hide();
+    this.$.wageDecorator.show();
+    this.$.hours.hide();
+    this.$.hoursDecorator.show();
+    this.$.company.hide();
+    this.$.companyDecorator.show();
+    this.$.contactName.hide();
+    this.$.contactNameDecorator.show();
+    this.$.contactEmail.hide();
+    this.$.contactEmailDecorator.show();
+    this.$.contactTelephone.hide();
+    this.$.contactTelephoneDecorator.show();
+    this.$.address.hide();
+    this.$.addressDecorator.show();
+    this.$.postCode.hide();
+    this.$.postCodeDecorator.show();
+    this.$.edit.setContent("Save");
+  },
+  switchToViewMode: function() {
+    this.$.title.show();
+    this.$.titleDecorator.hide();
+    this.$.description.show();
+    this.$.descriptionDecorator.hide();
+    this.$.wage.show();
+    this.$.wageDecorator.hide();
+    this.$.hours.show();
+    this.$.hoursDecorator.hide();
+    this.$.company.show();
+    this.$.companyDecorator.hide();
+    this.$.contactName.show();
+    this.$.contactNameDecorator.hide();
+    this.$.contactEmail.show();
+    this.$.contactEmailDecorator.hide();
+    this.$.contactTelephone.show();
+    this.$.contactTelephoneDecorator.hide();
+    this.$.address.show();
+    this.$.addressDecorator.hide();
+    this.$.postCode.show();
+    this.$.postCodeDecorator.hide();
+    this.$.edit.setContent("Edit");
+  },  
   loadEditButton: function() {
     console.log("here");
     var req = new enyo.Ajax({url: "/api/user/view/created", method: "GET", sync: true});

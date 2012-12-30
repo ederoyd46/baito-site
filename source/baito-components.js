@@ -99,8 +99,129 @@ enyo.kind({
     if (this.$.edit.getContent() == "Edit") {
       this.switchToEditMode();
     } else {
+      this.saveJob();
       this.switchToViewMode();
     }
+  },
+  saveJob: function() {
+    var jobReqObj = "";
+    if (this.$.inputTitle.getValue().length > 0) {
+      jobReqObj += "title=" + encodeURIComponent(this.$.inputTitle.getValue());
+    }
+
+    if (this.$.inputDescription.getValue().length > 0) {
+      jobReqObj += "&description=" + encodeURIComponent(this.$.inputDescription.getValue());
+    }
+
+    if (this.$.inputWage.getValue().length > 0) {
+      jobReqObj += "&wage=" + encodeURIComponent(this.$.inputWage.getValue());
+    }
+
+    if (this.$.inputHours.getValue().length > 0) {
+      jobReqObj += "&hours=" + encodeURIComponent(this.$.inputHours.getValue());
+    }
+    
+    if (this.$.inputCompany.getValue().length > 0) {
+      jobReqObj += "&company=" + encodeURIComponent(this.$.inputCompany.getValue());
+    }
+
+    if (this.$.inputContactName.getValue().length > 0) {
+      jobReqObj += "&contactName=" + encodeURIComponent(this.$.inputContactName.getValue());
+    }
+
+    if (this.$.inputContactEmail.getValue().length > 0) {
+      jobReqObj += "&contactEmail=" + encodeURIComponent(this.$.inputContactEmail.getValue());
+    }
+
+    if (this.$.inputContactTelephone.getValue().length > 0) {
+      jobReqObj += "&contactTelephone=" + encodeURIComponent(this.$.inputContactTelephone.getValue());
+    }
+
+    if (this.$.inputAddress.getValue().length > 0) {
+      jobReqObj += "&address=" + encodeURIComponent(this.$.inputAddress.getValue());
+    }
+    
+    if (this.$.inputPostCode.getValue().length > 0) {
+      jobReqObj += "&postalCode=" + encodeURIComponent(this.$.inputPostCode.getValue());
+    }
+    
+    jobReqObj += "&published=" + true;
+    
+    var data = {
+        // 'uuid': uuid,
+        'title': this.$.inputTitle.getValue(),
+        'description': this.$.inputDescription.getValue(),
+        'wage': this.$.inputWage.getValue(),
+        'hours': this.$.inputHours.getValue(),
+        'company': this.$.inputCompany.getValue(),
+        'contactName': this.$.inputContactName.getValue(),
+        'contactEmail': this.$.inputContactEmail.getValue(),
+        'contactTelephone': this.$.inputContactTelephone.getValue(),
+        'address': this.$.inputAddress.getValue(),
+        'postalCode': this.$.inputPostCode.getValue(),
+        // 'location': {
+        //     'latitude': latitude,
+        //     'longitude': longitude
+        // },
+        'published': true,
+        'monday': {
+            'anytime': false,
+            'morning': false,
+            'afternoon': false,
+            'evening': false,
+            'night': false
+        },
+        'tuesday': {
+            'anytime': false,
+            'morning': false,
+            'afternoon': false,
+            'evening': false,
+            'night': false
+        },
+        'wednesday': {
+            'anytime': false,
+            'morning': false,
+            'afternoon': false,
+            'evening': false,
+            'night': false
+        },
+        'thursday': {
+            'anytime': false,
+            'morning': false,
+            'afternoon': false,
+            'evening': false,
+            'night': false
+        },
+        'friday': {
+            'anytime': false,
+            'morning': false,
+            'afternoon': false,
+            'evening': false,
+            'night': false
+        },
+        'saturday': {
+            'anytime': false,
+            'morning': false,
+            'afternoon': false,
+            'evening': false,
+            'night': false
+        },
+        'sunday': {
+            'anytime': false,
+            'morning': false,
+            'afternoon': false,
+            'evening': false,
+            'night': false
+        }
+    };
+    
+    
+    var req = new enyo.Ajax({url: "/api/job/create", method: "POST", postBody: jobReqObj, sync: true});
+    req.response(enyo.bind(this, "processSaveJob"));
+    req.go();
+  },
+  processSaveJob: function(inRequest, inResponse) {
+    console.log(inResponse);
   },
   backButtonClick: function(inSender, inEvent) {
     this.bubble("onBack");

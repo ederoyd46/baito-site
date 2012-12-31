@@ -96,6 +96,9 @@ enyo.kind({
       {kind: "ApplyButton", name: "apply"},
       {kind: "onyx.Button", name: "edit", content: "Edit", onclick: "editButtonClick"},
     ]},
+    {name: "jobPopup", kind: "onyx.Popup", style: "padding: 10px", floating: true, centered: true, scrim: true, scrimWhenModal: false, components:[
+      {name: "jobErrors", classes: "errors"},
+    ]},
     {kind: "Signals", onAuthenticationChange: "loadEditButton"},
   ],
   editButtonClick: function(inSender, inEvent) {
@@ -168,6 +171,15 @@ enyo.kind({
     req.go();
   },
   processSaveJob: function(inRequest, inResponse) {
+    if (!inResponse.JobResponse.success) {
+      this.$.jobErrors.destroyComponents();
+      var errorContainer = this.$.jobErrors.createComponent({tag: "ul"}).render();
+      var validationErrors = inResponse.JobResponse.errors;
+      validationErrors.forEach(function(e) {
+        errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
+      });
+      this.$.jobPopup.show();      
+    }
     this.loadJob(true);
   },
   validatePostCode: function(inSender, inEvent) {
@@ -179,7 +191,10 @@ enyo.kind({
     if (!inResponse.LocationResponse.success) {
       this.latitude = undefined;
       this.longitude = undefined;
-      console.log("Location Unknown");
+      this.$.jobErrors.destroyComponents();
+      var errorContainer = this.$.jobErrors.createComponent({tag: "ul"}).render();
+      errorContainer.createComponent({content: inResponse.LocationResponse.message, tag: "li", classes: "error"}).render();
+      this.$.jobPopup.show();
       return;
     }
     

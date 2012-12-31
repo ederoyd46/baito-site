@@ -108,6 +108,7 @@ enyo.kind({
     this.inherited(arguments);
   },
   newJob: function() {
+    this.$.edit.show();
     this.jobId = undefined;
     this.loadedJobId = undefined;
     this.$.favourite.hide();
@@ -139,7 +140,6 @@ enyo.kind({
     this.switchToEditMode();
   },
   loadJob: function() {
-    console.log("Load job called");
     this.$.edit.hide();
     this.switchToViewMode();
     var req = new enyo.Ajax({url: "/api/job/view"});

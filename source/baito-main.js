@@ -74,8 +74,10 @@ enyo.kind({
     if (this.$.contentPanels.index == this.MAPS_VIEW) {
       this.$.mapContainer.panToJob(jobId);
     } else {
-      this.$.jobview.setJobId(jobId);
-      this.$.jobview.loadJob();
+      if (this.$.jobview.getJobId() != jobId) {
+        this.$.jobview.setJobId(jobId);
+        this.$.jobview.loadJob();
+      }
     }
     return true;
   },
@@ -83,9 +85,11 @@ enyo.kind({
     var item = this.$.resultList.results[inEvent.index];
     var jobId = item.job.JobSummary.uuid;
 
-    this.$.jobview.setJobId(jobId);
-    this.$.jobview.loadJob();
-
+    if (this.$.jobview.getJobId() != jobId) {
+      this.$.jobview.setJobId(jobId);
+      this.$.jobview.loadJob();
+    }
+    
     if (this.$.contentPanels.index != this.JOB_DETAILS) {
       this.$.contentPanels.setIndex(this.JOB_DETAILS);
     }

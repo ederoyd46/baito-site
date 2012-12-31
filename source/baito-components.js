@@ -101,121 +101,45 @@ enyo.kind({
     ]},
     {kind: "Signals", onAuthenticationChange: "loadEditButton"},
   ],
-  editButtonClick: function(inSender, inEvent) {
-    if (this.$.edit.getContent() == "Edit") {
-      this.switchToEditMode();
-    } else {
-      this.saveJob();
-      this.switchToViewMode();
-    }
-  },
-  saveJob: function() {
-    var jobReqObj = "";
-    
-    if (this.loadedJobId && this.loadedJobId == this.jobId) {
-      jobReqObj += "uuid=" + encodeURIComponent(this.loadedJobId);
-    }
-
-    if (this.latitude != undefined) {
-      jobReqObj += "&location[latitude]=" + encodeURIComponent(this.latitude);
-    }
-
-    if (this.longitude != undefined) {
-      jobReqObj += "&location[longitude]=" + encodeURIComponent(this.longitude);
-    }
-    
-    if (this.$.inputTitle.getValue().length > 0) {
-      jobReqObj += "&title=" + encodeURIComponent(this.$.inputTitle.getValue());
-    }
-
-    if (this.$.inputDescription.getValue().length > 0) {
-      jobReqObj += "&description=" + encodeURIComponent(this.$.inputDescription.getValue());
-    }
-
-    if (this.$.inputWage.getValue().length > 0) {
-      jobReqObj += "&wage=" + encodeURIComponent(this.$.inputWage.getValue());
-    }
-
-    if (this.$.inputHours.getValue().length > 0) {
-      jobReqObj += "&hours=" + encodeURIComponent(this.$.inputHours.getValue());
-    }
-    
-    if (this.$.inputCompany.getValue().length > 0) {
-      jobReqObj += "&company=" + encodeURIComponent(this.$.inputCompany.getValue());
-    }
-
-    if (this.$.inputContactName.getValue().length > 0) {
-      jobReqObj += "&contactName=" + encodeURIComponent(this.$.inputContactName.getValue());
-    }
-
-    if (this.$.inputContactEmail.getValue().length > 0) {
-      jobReqObj += "&contactEmail=" + encodeURIComponent(this.$.inputContactEmail.getValue());
-    }
-
-    if (this.$.inputContactTelephone.getValue().length > 0) {
-      jobReqObj += "&contactTelephone=" + encodeURIComponent(this.$.inputContactTelephone.getValue());
-    }
-
-    if (this.$.inputAddress.getValue().length > 0) {
-      jobReqObj += "&address=" + encodeURIComponent(this.$.inputAddress.getValue());
-    }
-    
-    if (this.$.inputPostCode.getValue().length > 0) {
-      jobReqObj += "&postalCode=" + encodeURIComponent(this.$.inputPostCode.getValue());
-    }
-    
-    jobReqObj += "&published=" + true;
-    
-    var req = new enyo.Ajax({url: "/api/job/create", method: "POST", postBody: jobReqObj, sync: true});
-    req.response(enyo.bind(this, "processSaveJob"));
-    req.go();
-  },
-  processSaveJob: function(inRequest, inResponse) {
-    if (!inResponse.JobResponse.success) {
-      this.$.jobErrors.destroyComponents();
-      var errorContainer = this.$.jobErrors.createComponent({tag: "ul"}).render();
-      var validationErrors = inResponse.JobResponse.errors;
-      validationErrors.forEach(function(e) {
-        errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
-      });
-      this.$.jobPopup.show();      
-    }
-    this.loadJob(true);
-  },
-  validatePostCode: function(inSender, inEvent) {
-    var req = new enyo.Ajax({url: "/api/location/geolocationcode", method: "GET", sync: true});
-    req.response(enyo.bind(this, "processValidatePostCode"));
-    req.go({searchTerm: this.$.inputPostCode.getValue()});
-  },
-  processValidatePostCode: function(inRequest, inResponse) {
-    if (!inResponse.LocationResponse.success) {
-      this.latitude = undefined;
-      this.longitude = undefined;
-      this.$.jobErrors.destroyComponents();
-      var errorContainer = this.$.jobErrors.createComponent({tag: "ul"}).render();
-      errorContainer.createComponent({content: inResponse.LocationResponse.message, tag: "li", classes: "error"}).render();
-      this.$.jobPopup.show();
-      return;
-    }
-    
-    var location = inResponse.LocationResponse.location;
-    this.latitude = location.latitude;
-    this.longitude = location.longitude;
-  },
-  backButtonClick: function(inSender, inEvent) {
-    this.bubble("onBack");
-    return true;
-  },
   create: function() {
     this.inherited(arguments);
   },
   destroy: function() {
     this.inherited(arguments);
   },
-  loadJob: function(force) {
-    if (!force && this.jobId && this.loadedJobId && this.jobId == this.loadedJobId) {
-      return;
-    }
+  newJob: function() {
+    this.jobId = undefined;
+    this.loadedJobId = undefined;
+    this.$.favourite.hide();
+    this.$.apply.hide();
+    this.latitude = undefined;
+    this.longitude = undefined;    
+    
+    this.$.title.setContent("");
+    this.$.inputTitle.setValue("");
+    this.$.description.setContent("");
+    this.$.inputDescription.setValue("");
+    this.$.wage.setContent("");
+    this.$.inputWage.setValue("");
+    this.$.hours.setContent("");
+    this.$.inputHours.setValue("");
+    this.$.company.setContent("");
+    this.$.inputCompany.setValue("");
+    this.$.contactName.setContent("");
+    this.$.inputContactName.setValue("");
+    this.$.contactEmail.setContent("");
+    this.$.inputContactEmail.setValue("");
+    this.$.contactTelephone.setContent("");
+    this.$.inputContactTelephone.setValue("");
+    this.$.address.setContent("");
+    this.$.inputAddress.setValue("");
+    this.$.postCode.setContent("");
+    this.$.inputPostCode.setValue("");
+    
+    this.switchToEditMode();
+  },
+  loadJob: function() {
+    console.log("Load job called");
     this.$.edit.hide();
     this.switchToViewMode();
     var req = new enyo.Ajax({url: "/api/job/view"});
@@ -236,7 +160,9 @@ enyo.kind({
       return;
     }
     
-    var job = inResponse.JobResponse.job.Job;
+    this.populateFields(inResponse.JobResponse.job.Job);
+  },
+  populateFields: function(job) {
     this.$.title.setContent(job.title);
     this.$.inputTitle.setValue(job.title);
     this.$.description.setContent(job.description);
@@ -333,7 +259,113 @@ enyo.kind({
       }
     }
     return true;
-  }
+  },
+  editButtonClick: function(inSender, inEvent) {
+    if (this.$.edit.getContent() == "Edit") {
+      this.switchToEditMode();
+    } else {
+      this.saveJob();
+      this.switchToViewMode();
+    }
+  },
+  saveJob: function() {
+    var jobReqObj = "";
+    
+    if (this.loadedJobId && this.loadedJobId == this.jobId) {
+      jobReqObj += "uuid=" + encodeURIComponent(this.loadedJobId);
+    }
+
+    if (this.latitude != undefined) {
+      jobReqObj += "&location[latitude]=" + encodeURIComponent(this.latitude);
+    }
+
+    if (this.longitude != undefined) {
+      jobReqObj += "&location[longitude]=" + encodeURIComponent(this.longitude);
+    }
+    
+    if (this.$.inputTitle.getValue().length > 0) {
+      jobReqObj += "&title=" + encodeURIComponent(this.$.inputTitle.getValue());
+    }
+
+    if (this.$.inputDescription.getValue().length > 0) {
+      jobReqObj += "&description=" + encodeURIComponent(this.$.inputDescription.getValue());
+    }
+
+    if (this.$.inputWage.getValue().length > 0) {
+      jobReqObj += "&wage=" + encodeURIComponent(this.$.inputWage.getValue());
+    }
+
+    if (this.$.inputHours.getValue().length > 0) {
+      jobReqObj += "&hours=" + encodeURIComponent(this.$.inputHours.getValue());
+    }
+    
+    if (this.$.inputCompany.getValue().length > 0) {
+      jobReqObj += "&company=" + encodeURIComponent(this.$.inputCompany.getValue());
+    }
+
+    if (this.$.inputContactName.getValue().length > 0) {
+      jobReqObj += "&contactName=" + encodeURIComponent(this.$.inputContactName.getValue());
+    }
+
+    if (this.$.inputContactEmail.getValue().length > 0) {
+      jobReqObj += "&contactEmail=" + encodeURIComponent(this.$.inputContactEmail.getValue());
+    }
+
+    if (this.$.inputContactTelephone.getValue().length > 0) {
+      jobReqObj += "&contactTelephone=" + encodeURIComponent(this.$.inputContactTelephone.getValue());
+    }
+
+    if (this.$.inputAddress.getValue().length > 0) {
+      jobReqObj += "&address=" + encodeURIComponent(this.$.inputAddress.getValue());
+    }
+    
+    if (this.$.inputPostCode.getValue().length > 0) {
+      jobReqObj += "&postalCode=" + encodeURIComponent(this.$.inputPostCode.getValue());
+    }
+    
+    jobReqObj += "&published=" + true;
+    
+    var req = new enyo.Ajax({url: "/api/job/create", method: "POST", postBody: jobReqObj, sync: true});
+    req.response(enyo.bind(this, "processSaveJob"));
+    req.go();
+  },
+  processSaveJob: function(inRequest, inResponse) {
+    if (!inResponse.JobResponse.success) {
+      this.$.jobErrors.destroyComponents();
+      var errorContainer = this.$.jobErrors.createComponent({tag: "ul"}).render();
+      var validationErrors = inResponse.JobResponse.errors;
+      validationErrors.forEach(function(e) {
+        errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
+      });
+      this.$.jobPopup.show();      
+    }
+    
+    this.populateFields(inResponse.JobResponse.job.Job);
+  },
+  validatePostCode: function(inSender, inEvent) {
+    var req = new enyo.Ajax({url: "/api/location/geolocationcode", method: "GET", sync: true});
+    req.response(enyo.bind(this, "processValidatePostCode"));
+    req.go({searchTerm: this.$.inputPostCode.getValue()});
+  },
+  processValidatePostCode: function(inRequest, inResponse) {
+    if (!inResponse.LocationResponse.success) {
+      this.latitude = undefined;
+      this.longitude = undefined;
+      this.$.jobErrors.destroyComponents();
+      var errorContainer = this.$.jobErrors.createComponent({tag: "ul"}).render();
+      errorContainer.createComponent({content: inResponse.LocationResponse.message, tag: "li", classes: "error"}).render();
+      this.$.jobPopup.show();
+      return;
+    }
+    
+    var location = inResponse.LocationResponse.location;
+    this.latitude = location.latitude;
+    this.longitude = location.longitude;
+  },
+  backButtonClick: function(inSender, inEvent) {
+    this.bubble("onBack");
+    return true;
+  }  
 });
 
 enyo.kind({

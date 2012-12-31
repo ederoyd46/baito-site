@@ -84,7 +84,11 @@ enyo.kind({
     this.$.jobDetails.onBack = "openCreatedList";
     this.$.myAccountPanels.setIndex(this.JOB_DETAILS_VIEW);
   },
-  
+  createJob: function() {
+    this.$.jobDetails.onBack = "openCreatedList";
+    this.$.jobDetails.newJob();
+    this.$.myAccountPanels.setIndex(this.JOB_DETAILS_VIEW);
+  }
 });
 
 enyo.kind({
@@ -226,7 +230,8 @@ enyo.kind({
   events: {
     onMenuActionPerformed: "",
     onMyAccount: "",
-    onLogout: ""
+    onLogout: "",
+    onCreateJob: ""
   },
   components: [
     {name: "welcomeItem", content: "", classes: "welcome-item"},
@@ -235,6 +240,7 @@ enyo.kind({
       {kind: "onyx.Menu", components: [
           {name: "loginItem", content: "Login", ontap: "login"},
           {name: "myaccountItem", content: "My Account", ontap: "myAccountClick"},
+          {name: "createJobItem", content: "Create Job", ontap: "createJobClick"},
           {name: "dividerItem", classes: "onyx-menu-divider"},
           {name: "registerItem", content: "Register", ontap: "register"},
           {name: "logoutItem", content: "Logout", ontap: "logout"},
@@ -250,7 +256,10 @@ enyo.kind({
     this.inherited(arguments);
   },
   myAccountClick: function(inSender, inEvent) {
-    this.doMyAccount();
+    this.bubble("onMyAccount");
+  },
+  createJobClick: function(inSender, inEvent) {
+    this.bubble("onCreateJob");
   },
   refreshMenuItems: function() {
     var req = new enyo.Ajax({url: "/api/user/whoami", method: "GET", sync: true});
@@ -262,6 +271,7 @@ enyo.kind({
       this.$.loginItem.hide();
       this.$.registerItem.hide();
       this.$.myaccountItem.show();
+      this.$.createJobItem.show();
       this.$.logoutItem.show();
       this.$.welcomeItem.setContent(inResponse.UserResponse.user.name)
       this.$.welcomeItem.show();
@@ -269,6 +279,7 @@ enyo.kind({
       this.$.loginItem.show();
       this.$.registerItem.show();
       this.$.myaccountItem.hide();
+      this.$.createJobItem.hide();
       this.$.logoutItem.hide();
       this.$.welcomeItem.setContent("")
       this.$.welcomeItem.hide();

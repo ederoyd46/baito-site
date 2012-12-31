@@ -14,6 +14,8 @@ enyo.kind({
     onJobLoaded: "loadEditButton",
   },
   loadedJobId: undefined,
+  latitude: undefined,
+  longitude: undefined,
   components: [
     {name: "jobContainer", kind: "Scroller", touch: true, classes: "job-container", components: [
       {kind: "onyx.Groupbox", components: [
@@ -83,8 +85,8 @@ enyo.kind({
         {kind: "onyx.GroupboxHeader", content: "Post Code"},
         {name: "postCode", style: "padding: 8px;"},
         {name: "postCodeDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
-          {name: "inputPostCode", kind: "onyx.Input", placeholder: "Enter Post Code", classes: "job-input", onkeypress: "inputChange"}
-        ]},        
+          {name: "inputPostCode", kind: "onyx.Input", placeholder: "Enter Post Code", classes: "job-input", onkeypress: "inputChange", onblur: "validatePostCode"}
+        ]},
       ]},
       {style: "height: 60px"} //Spacer
     ]},
@@ -94,6 +96,7 @@ enyo.kind({
       {kind: "ApplyButton", name: "apply"},
       {kind: "onyx.Button", name: "edit", content: "Edit", onclick: "editButtonClick"},
     ]},
+    {kind: "Signals", onAuthenticationChange: "loadEditButton"},
   ],
   editButtonClick: function(inSender, inEvent) {
     if (this.$.edit.getContent() == "Edit") {
@@ -105,8 +108,21 @@ enyo.kind({
   },
   saveJob: function() {
     var jobReqObj = "";
+    
+    if (this.loadedJobId && this.loadedJobId == this.jobId) {
+      jobReqObj += "uuid=" + encodeURIComponent(this.loadedJobId);
+    }
+
+    if (this.latitude != undefined) {
+      jobReqObj += "&location[latitude]=" + encodeURIComponent(this.latitude);
+    }
+
+    if (this.longitude != undefined) {
+      jobReqObj += "&location[longitude]=" + encodeURIComponent(this.longitude);
+    }
+    
     if (this.$.inputTitle.getValue().length > 0) {
-      jobReqObj += "title=" + encodeURIComponent(this.$.inputTitle.getValue());
+      jobReqObj += "&title=" + encodeURIComponent(this.$.inputTitle.getValue());
     }
 
     if (this.$.inputDescription.getValue().length > 0) {
@@ -147,81 +163,29 @@ enyo.kind({
     
     jobReqObj += "&published=" + true;
     
-    var data = {
-        // 'uuid': uuid,
-        'title': this.$.inputTitle.getValue(),
-        'description': this.$.inputDescription.getValue(),
-        'wage': this.$.inputWage.getValue(),
-        'hours': this.$.inputHours.getValue(),
-        'company': this.$.inputCompany.getValue(),
-        'contactName': this.$.inputContactName.getValue(),
-        'contactEmail': this.$.inputContactEmail.getValue(),
-        'contactTelephone': this.$.inputContactTelephone.getValue(),
-        'address': this.$.inputAddress.getValue(),
-        'postalCode': this.$.inputPostCode.getValue(),
-        // 'location': {
-        //     'latitude': latitude,
-        //     'longitude': longitude
-        // },
-        'published': true,
-        'monday': {
-            'anytime': false,
-            'morning': false,
-            'afternoon': false,
-            'evening': false,
-            'night': false
-        },
-        'tuesday': {
-            'anytime': false,
-            'morning': false,
-            'afternoon': false,
-            'evening': false,
-            'night': false
-        },
-        'wednesday': {
-            'anytime': false,
-            'morning': false,
-            'afternoon': false,
-            'evening': false,
-            'night': false
-        },
-        'thursday': {
-            'anytime': false,
-            'morning': false,
-            'afternoon': false,
-            'evening': false,
-            'night': false
-        },
-        'friday': {
-            'anytime': false,
-            'morning': false,
-            'afternoon': false,
-            'evening': false,
-            'night': false
-        },
-        'saturday': {
-            'anytime': false,
-            'morning': false,
-            'afternoon': false,
-            'evening': false,
-            'night': false
-        },
-        'sunday': {
-            'anytime': false,
-            'morning': false,
-            'afternoon': false,
-            'evening': false,
-            'night': false
-        }
-    };
-    
-    
     var req = new enyo.Ajax({url: "/api/job/create", method: "POST", postBody: jobReqObj, sync: true});
     req.response(enyo.bind(this, "processSaveJob"));
     req.go();
   },
   processSaveJob: function(inRequest, inResponse) {
-    console.log(inResponse);
+    this.loadJob(true);
+  },
+  validatePostCode: function(inSender, inEvent) {
+    var req = new enyo.Ajax({url: "/api/location/geolocationcode", method: "GET", sync: true});
+    req.response(enyo.bind(this, "processValidatePostCode"));
+    req.go({searchTerm: this.$.inputPostCode.getValue()});
+  },
+  processValidatePostCode: function(inRequest, inResponse) {
+    if (!inResponse.LocationResponse.success) {
+      this.latitude = undefined;
+      this.longitude = undefined;
+      console.log("Location Unknown");
+      return;
+    }
+    
+    var location = inResponse.LocationResponse.location;
+    this.latitude = location.latitude;
+    this.longitude = location.longitude;
   },
   backButtonClick: function(inSender, inEvent) {
     this.bubble("onBack");
@@ -233,8 +197,8 @@ enyo.kind({
   destroy: function() {
     this.inherited(arguments);
   },
-  loadJob: function() {
-    if (this.jobId && this.loadedJobId && this.jobId == this.loadedJobId) {
+  loadJob: function(force) {
+    if (!force && this.jobId && this.loadedJobId && this.jobId == this.loadedJobId) {
       return;
     }
     this.$.edit.hide();
@@ -280,6 +244,9 @@ enyo.kind({
     this.$.inputPostCode.setValue(job.postalCode);
     this.$.favourite.setJobId(job.uuid);
     this.$.favourite.refreshContent();
+    this.latitude = job.location.latitude;
+    this.longitude = job.location.longitude;
+    
     this.$.apply.setJobId(job.uuid);
     this.$.apply.setJobTitle(job.title);
     this.$.apply.refreshContent();
@@ -333,26 +300,24 @@ enyo.kind({
     this.$.edit.setContent("Edit");
   },  
   loadEditButton: function() {
-    console.log("here");
     var req = new enyo.Ajax({url: "/api/user/view/created", method: "GET", sync: true});
     req.response(enyo.bind(this, "processLoadEditButton"));
     req.go();
   },
   processLoadEditButton: function(inRequest, inResponse) {
     if (!inResponse.JobsResponse.success) {
-      enyo.Signals.send("onAuthenticationChange");
       return;
     }
     var results = inResponse.JobsResponse.jobs;
-    var currentJob = this.jobId;
-    var editButton = this.$.edit;
-    results.forEach(function(job) {
-      if (job.JobSummary.uuid == currentJob) {
-        editButton.show();
+    for (i=0;i<results.length;i++) {
+      if (results[i].JobSummary.uuid == this.jobId) {
+        this.$.edit.show();
+        break;
       } else {
-        editButton.hide();
+        this.$.edit.hide();
       }
-    });
+    }
+    return true;
   }
 });
 

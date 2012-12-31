@@ -29,7 +29,7 @@ enyo.kind({
         {kind: "onyx.GroupboxHeader", content: "Description"},
         {name: "description", style: "padding: 8px;", classes: "wrap"},
         {name: "descriptionDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
-          {name: "inputDescription", kind: "onyx.TextArea", placeholder: "Enter Description", classes: "job-input", onkeypress: "inputChange"}
+          {name: "inputDescription", kind: "onyx.TextArea", placeholder: "Enter Description", classes: "job-large-input", onkeypress: "inputChange"}
         ]},
       ]},
       {kind: "onyx.Groupbox", components: [

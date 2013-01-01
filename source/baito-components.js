@@ -241,6 +241,7 @@ enyo.kind({
     this.$.edit.setContent("Edit");
   },  
   loadEditButton: function() {
+    console.log("Job Loaded: " + this.jobId);
     var req = new enyo.Ajax({url: "/api/user/view/created", method: "GET", sync: true});
     req.response(enyo.bind(this, "processLoadEditButton"));
     req.go();

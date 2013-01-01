@@ -9,7 +9,8 @@ enyo.kind({
   CREATED_VIEW: 3,
   MYDETAILS_OPTION: 3,
   MYDETAILS_VIEW: 4,
-  JOB_DETAILS_VIEW: 5,
+  JOB_DETAILS_VIEW: 4,
+  JOB_APPLICANTS_VIEW: 5,
   components: [
       {name: "myAccountOptionList", touch: true, onSetupItem: "setupItem", classes: "search-result-list", kind: "List", components: [
         {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
@@ -19,9 +20,9 @@ enyo.kind({
       {kind: "Panels", name: "myAccountPanels", classes: "my-account-panels", draggable:false, components: [
         {content: "My Account"},
         {name: "favouritesList", kind: "FavouritesList", touch: true, onFavouriteClicked: "openFavouriteJobItem"},
-        {name: "applicationsList", kind: "ApplicationsList", touch: true},
+        {name: "applicationsList", kind: "UserApplicationsList", touch: true},
         {name: "createdList", kind: "CreatedList", touch: true, onCreatedClicked: "openCreatedJobItem"},
-        {name: "jobDetails", kind: "JobDetails"}
+        {name: "jobDetails", kind: "JobDetails"},
       ]},
   ],
   create: function() {
@@ -138,7 +139,7 @@ enyo.kind({
 });
 
 enyo.kind({
-  name: "ApplicationsList",
+  name: "UserApplicationsList",
   kind: "List",
   classes: "applications-result-list",
   results: [],
@@ -177,7 +178,6 @@ enyo.kind({
   },
 });
 
-
 enyo.kind({
   name: "CreatedList",
   kind: "List",
@@ -188,7 +188,8 @@ enyo.kind({
   results: [],
   components: [
     {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
-      {name: "myCreatedTitle", tag: "span"}
+      {name: "myCreatedTitle", tag: "span"},
+      // {name: "myCreatedApplicants", kind: "onyx.Button", onclick: "loadApplicants"}
     ]}
   ],
   handlers: {
@@ -222,6 +223,9 @@ enyo.kind({
     var entry = item.JobSummary.title;
     this.$.myCreatedTitle.setContent(entry);
   },
+  loadApplicants: function(inSender, inEvent) {
+    console.log("here");
+  }
 });
 
 enyo.kind({

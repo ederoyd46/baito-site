@@ -17,84 +17,88 @@ enyo.kind({
   latitude: undefined,
   longitude: undefined,
   components: [
-    {name: "jobContainer", kind: "Scroller", touch: true, classes: "job-container", components: [
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Title"},
-        {name: "title", style: "padding: 8px;"},
-        {name: "titleDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
-          {name: "inputTitle", kind: "onyx.Input", placeholder: "Enter Title", classes: "job-input", onkeypress: "inputChange"}
+    {kind: "Panels", name: "jobDetailsContentPanels", style: "height: 100%", draggable: false, animate: true, fit: true, components: [
+      {name: "jobContainer", kind: "Scroller", touch: true, classes: "job-container", components: [
+        {kind: "onyx.Groupbox", components: [
+          {kind: "onyx.GroupboxHeader", content: "Title"},
+          {name: "title", style: "padding: 8px;"},
+          {name: "titleDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+            {name: "inputTitle", kind: "onyx.Input", placeholder: "Enter Title", classes: "job-input", onkeypress: "inputChange"}
+          ]},
         ]},
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Description"},
-        {name: "description", style: "padding: 8px;", classes: "wrap"},
-        {name: "descriptionDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
-          {name: "inputDescription", kind: "onyx.TextArea", placeholder: "Enter Description", classes: "job-large-input", onkeypress: "inputChange"}
+        {kind: "onyx.Groupbox", components: [
+          {kind: "onyx.GroupboxHeader", content: "Description"},
+          {name: "description", style: "padding: 8px;", classes: "wrap"},
+          {name: "descriptionDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+            {name: "inputDescription", kind: "onyx.TextArea", placeholder: "Enter Description", classes: "job-large-input", onkeypress: "inputChange"}
+          ]},
         ]},
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Wage (per hour)"},
-        {name: "wage", style: "padding: 8px;"},
-        {name: "wageDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
-          {name: "inputWage", kind: "onyx.Input", placeholder: "Enter Wage", classes: "job-input", onkeypress: "inputChange"}
+        {kind: "onyx.Groupbox", components: [
+          {kind: "onyx.GroupboxHeader", content: "Wage (per hour)"},
+          {name: "wage", style: "padding: 8px;"},
+          {name: "wageDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+            {name: "inputWage", kind: "onyx.Input", placeholder: "Enter Wage", classes: "job-input", onkeypress: "inputChange"}
+          ]},
         ]},
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Hours (per week)"},
-        {name: "hours", style: "padding: 8px;"},
-        {name: "hoursDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
-          {name: "inputHours", kind: "onyx.Input", placeholder: "Enter Hours", classes: "job-input", onkeypress: "inputChange"}
+        {kind: "onyx.Groupbox", components: [
+          {kind: "onyx.GroupboxHeader", content: "Hours (per week)"},
+          {name: "hours", style: "padding: 8px;"},
+          {name: "hoursDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+            {name: "inputHours", kind: "onyx.Input", placeholder: "Enter Hours", classes: "job-input", onkeypress: "inputChange"}
+          ]},
         ]},
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Company"},
-        {name: "company", style: "padding: 8px;"},
-        {name: "companyDecorator", kind: "onyx.InputDecorator", components: [
-          {name: "inputCompany", kind: "onyx.Input", placeholder: "Enter Company", classes: "job-input", onkeypress: "inputChange"}
+        {kind: "onyx.Groupbox", components: [
+          {kind: "onyx.GroupboxHeader", content: "Company"},
+          {name: "company", style: "padding: 8px;"},
+          {name: "companyDecorator", kind: "onyx.InputDecorator", components: [
+            {name: "inputCompany", kind: "onyx.Input", placeholder: "Enter Company", classes: "job-input", onkeypress: "inputChange"}
+          ]},
         ]},
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Contact Name"},
-        {name: "contactName", style: "padding: 8px;"},
-        {name: "contactNameDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
-          {name: "inputContactName", kind: "onyx.Input", placeholder: "Enter Contact Name", classes: "job-input", onkeypress: "inputChange"}
+        {kind: "onyx.Groupbox", components: [
+          {kind: "onyx.GroupboxHeader", content: "Contact Name"},
+          {name: "contactName", style: "padding: 8px;"},
+          {name: "contactNameDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+            {name: "inputContactName", kind: "onyx.Input", placeholder: "Enter Contact Name", classes: "job-input", onkeypress: "inputChange"}
+          ]},
         ]},
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Contact Email"},
-        {name: "contactEmail", style: "padding: 8px;"},
-        {name: "contactEmailDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
-          {name: "inputContactEmail", kind: "onyx.Input", placeholder: "Enter Contact Email", classes: "job-input", onkeypress: "inputChange"}
-        ]},        
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Contact Telephone"},
-        {name: "contactTelephone", style: "padding: 8px;"},
-        {name: "contactTelephoneDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
-          {name: "inputContactTelephone", kind: "onyx.Input", placeholder: "Enter Contact Telephone Number", classes: "job-input", onkeypress: "inputChange"}
-        ]},        
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Address"},
-        {name: "address", style: "padding: 8px;", classes: "wrap"},
-        {name: "addressDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
-          {name: "inputAddress", kind: "onyx.TextArea", placeholder: "Enter Description", classes: "job-input", onkeypress: "inputChange"}
+        {kind: "onyx.Groupbox", components: [
+          {kind: "onyx.GroupboxHeader", content: "Contact Email"},
+          {name: "contactEmail", style: "padding: 8px;"},
+          {name: "contactEmailDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+            {name: "inputContactEmail", kind: "onyx.Input", placeholder: "Enter Contact Email", classes: "job-input", onkeypress: "inputChange"}
+          ]},        
         ]},
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Post Code"},
-        {name: "postCode", style: "padding: 8px;"},
-        {name: "postCodeDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
-          {name: "inputPostCode", kind: "onyx.Input", placeholder: "Enter Post Code", classes: "job-input", onkeypress: "inputChange", onblur: "validatePostCode"}
+        {kind: "onyx.Groupbox", components: [
+          {kind: "onyx.GroupboxHeader", content: "Contact Telephone"},
+          {name: "contactTelephone", style: "padding: 8px;"},
+          {name: "contactTelephoneDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+            {name: "inputContactTelephone", kind: "onyx.Input", placeholder: "Enter Contact Telephone Number", classes: "job-input", onkeypress: "inputChange"}
+          ]},        
         ]},
+        {kind: "onyx.Groupbox", components: [
+          {kind: "onyx.GroupboxHeader", content: "Address"},
+          {name: "address", style: "padding: 8px;", classes: "wrap"},
+          {name: "addressDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+            {name: "inputAddress", kind: "onyx.TextArea", placeholder: "Enter Description", classes: "job-input", onkeypress: "inputChange"}
+          ]},
+        ]},
+        {kind: "onyx.Groupbox", components: [
+          {kind: "onyx.GroupboxHeader", content: "Post Code"},
+          {name: "postCode", style: "padding: 8px;"},
+          {name: "postCodeDecorator", kind: "onyx.InputDecorator", classes: "job-inputs", components: [
+            {name: "inputPostCode", kind: "onyx.Input", placeholder: "Enter Post Code", classes: "job-input", onkeypress: "inputChange", onblur: "validatePostCode"}
+          ]},
+        ]},
+        {style: "height: 60px"} //Spacer
       ]},
-      {style: "height: 60px"} //Spacer
+      {name: "applicantsList", kind: "JobApplicationsList"},
     ]},
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", classes: "job-toolbar", components: [
       {kind: "onyx.Button", content: "Back", onclick:"backButtonClick"},
       {kind: "FavouriteButton", name: "favourite"},
       {kind: "ApplyButton", name: "apply"},
       {kind: "onyx.Button", name: "edit", content: "Edit", onclick: "editButtonClick"},
+      {kind: "onyx.Button", name: "applicants", content: "Applicants", onclick: "applicantButtonClick"},
     ]},
     {name: "jobPopup", kind: "onyx.Popup", style: "padding: 10px", floating: true, centered: true, scrim: true, scrimWhenModal: false, components:[
       {name: "jobErrors", classes: "errors"},
@@ -140,7 +144,9 @@ enyo.kind({
     this.switchToEditMode();
   },
   loadJob: function() {
+    this.$.jobDetailsContentPanels.setIndex(0);
     this.$.edit.hide();
+    this.$.applicants.hide();
     this.switchToViewMode();
     var req = new enyo.Ajax({url: "/api/job/view"});
     req.response(enyo.bind(this, "processLoadedJob"));
@@ -241,7 +247,6 @@ enyo.kind({
     this.$.edit.setContent("Edit");
   },  
   loadEditButton: function() {
-    console.log("Job Loaded: " + this.jobId);
     var req = new enyo.Ajax({url: "/api/user/view/created", method: "GET", sync: true});
     req.response(enyo.bind(this, "processLoadEditButton"));
     req.go();
@@ -254,9 +259,13 @@ enyo.kind({
     for (i=0;i<results.length;i++) {
       if (results[i].JobSummary.uuid == this.jobId) {
         this.$.edit.show();
+        this.$.applicants.show();
+        this.$.applicants.setContent("Applicants");
+        
         break;
       } else {
         this.$.edit.hide();
+        this.$.applicants.hide();
       }
     }
     return true;
@@ -366,7 +375,74 @@ enyo.kind({
   backButtonClick: function(inSender, inEvent) {
     this.bubble("onBack");
     return true;
-  }  
+  },
+  applicantButtonClick: function(inSender, inEvent) {
+    if (this.$.jobDetailsContentPanels.getIndex() == 0) {
+      this.$.applicantsList.setJobId(this.jobId);
+      this.$.applicantsList.refreshItems();
+      this.$.jobDetailsContentPanels.setIndex(1);
+      this.$.edit.setDisabled(true);
+      this.$.applicants.setContent("Details");
+    } else {
+      this.$.jobDetailsContentPanels.setIndex(0);
+      this.$.edit.setDisabled(false);
+      this.$.applicants.setContent("Applicants");
+    }
+  }
+});
+
+enyo.kind({
+  name: "JobApplicationsList",
+  kind: "List",
+  classes: "applications-result-list",
+  touch: true,
+  published: {
+    jobId: undefined,
+  },
+  results: [],
+  components: [
+    {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
+      {name: "jobApplicantName"},
+      {name: "jobApplicantEmail"},
+      {name: "jobApplicantPhone"},
+      {name: "jobApplicantAdditional"},
+      {name: "jobApplicantNotes"},
+      {name: "jobApplicantStatus"},
+    ]}
+  ],
+  handlers: {
+    onSetupItem: "setupItem", 
+  },
+  create: function() {
+    this.inherited(arguments);
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  refreshItems: function() {
+    var req = new enyo.Ajax({url: "/api/job/view/applications", method: "GET", sync: true});
+    req.response(enyo.bind(this, "processRefreshItems"));
+    req.go({jobid: this.jobId});
+  },
+  processRefreshItems: function(inRequest, inResponse) {
+    if (!inResponse.JobApplicationsResponse.success) {
+      enyo.Signals.send("onAuthenticationChange");
+      return;
+    }
+    this.results = inResponse.JobApplicationsResponse.jobApplications;
+    this.setCount(this.results.length);
+    this.reset();
+  },
+  setupItem: function(inSender, inEvent) {
+    var item = this.results[inEvent.index];
+    this.$.jobApplicantName.setContent(item.OwnerViewJobApplication.name);
+    this.$.jobApplicantEmail.setContent(item.OwnerViewJobApplication.email);
+    this.$.jobApplicantPhone.setContent(item.OwnerViewJobApplication.phone);
+    this.$.jobApplicantAdditional.setContent(item.OwnerViewJobApplication.additional);
+    this.$.jobApplicantNotes.setContent(item.OwnerViewJobApplication.notes);
+    this.$.jobApplicantStatus.setContent(item.OwnerViewJobApplication.status);
+    return true;
+  },
 });
 
 enyo.kind({

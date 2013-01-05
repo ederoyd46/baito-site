@@ -91,7 +91,8 @@ enyo.kind({
         ]},
         {style: "height: 60px"} //Spacer
       ]},
-      {name: "applicantsList", kind: "JobApplicationsList"},
+      {name: "applicantsList", kind: "JobApplicationsList", onOpenJobApplication: "switchToJobApplicationView"},
+      {name: "applicationView", kind: "JobApplicationView"},      
     ]},
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", classes: "job-toolbar", components: [
       {kind: "onyx.Button", content: "Back", onclick:"backButtonClick"},
@@ -381,15 +382,151 @@ enyo.kind({
       this.$.applicantsList.setJobId(this.jobId);
       this.$.applicantsList.refreshItems();
       this.$.jobDetailsContentPanels.setIndex(1);
-      this.$.edit.setDisabled(true);
+      this.$.apply.hide();
+      this.$.edit.hide();
+      this.$.favourite.hide();
       this.$.applicants.setContent("Details");
     } else {
       this.$.jobDetailsContentPanels.setIndex(0);
-      this.$.edit.setDisabled(false);
+      this.$.apply.show();
+      this.$.edit.show();
+      this.$.favourite.show();
       this.$.applicants.setContent("Applicants");
     }
+  },
+  switchToJobApplicationView: function(inSender, inEvent) {
+    this.$.applicationView.setAppId(inEvent.appId);
+    this.$.applicationView.refreshApplication();
+    this.$.jobDetailsContentPanels.setIndex(2);
+  }  
+});
+
+enyo.kind({
+  name: "JobApplicationView",
+  classes: "application-container",
+  kind: "Control",
+  published: {
+    appId: undefined,
+  },
+  events: {
+  },
+  handlers: {
+    onShow: "setFocus"
+  },
+  components: [
+      {name: "errors", classes: "errors"},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Name"},
+        {name: "jobApplicantName"},
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Email"},
+        {name: "jobApplicantEmail"},
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Phone"},
+        {name: "jobApplicantPhone"},
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Additional"},
+        {name: "jobApplicantAdditional", classes: "wrap"},
+      ]},
+      {name: "notesGroup", kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Notes (Private)"},
+        {name: "jobApplicantNotes", kind: "onyx.InputDecorator", classes: "applicant-inputs", components: [
+          {name: "inputJobApplicantNotes", kind: "onyx.TextArea", placeholder: "Write some notes about the applicant...", classes: "applicant-large-input"}
+        ]},
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Status"},
+        {name: "jobApplicantStatus", kind: "onyx.RadioGroup", components: [
+            {name: "statusPending", content: "Pending"},
+            {name: "statusConsidered", content: "Considered"},
+            {name: "statusAccepted", content: "Accepted"},
+            {name: "statusRejected", content: "Rejected"},
+        ]},      
+      ]},
+      {kind: "onyx.Button", name: "save", content: "Save", onclick: "updateApplication"},
+      
+  ],
+  create: function() {
+    this.inherited(arguments);
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  refreshApplication: function() {
+    var req = new enyo.Ajax({url: "/api/job/view/application", method: "GET", sync: true});
+    req.response(enyo.bind(this, "processRefreshApplication"));
+    req.go({appid: this.appId});
+  },
+  processRefreshApplication: function(inRequest, inResponse) {
+    var ja = undefined;
+    if (inResponse.JobApplicationResponse.jobApplication.ViewJobApplication) {
+      this.$.notesGroup.hide();
+      this.$.statusPending.setDisabled(true);
+      this.$.statusConsidered.setDisabled(true);
+      this.$.statusAccepted.setDisabled(true);
+      this.$.statusRejected.setDisabled(true);
+      ja = inResponse.JobApplicationResponse.jobApplication.ViewJobApplication;
+    } else {
+      this.$.notesGroup.show();
+      this.$.statusPending.setDisabled(false);
+      this.$.statusConsidered.setDisabled(false);
+      this.$.statusAccepted.setDisabled(false);
+      this.$.statusRejected.setDisabled(false);
+      ja = inResponse.JobApplicationResponse.jobApplication.OwnerViewJobApplication;
+    }
+    this.$.jobApplicantName.setContent(ja.name);
+    this.$.jobApplicantEmail.setContent(ja.email);
+    this.$.jobApplicantPhone.setContent(ja.phone);
+    this.$.jobApplicantAdditional.setContent(ja.additional);
+
+    this.$.inputJobApplicantNotes.setValue(ja.notes);
+
+    if (ja.status == "Pending") {
+      this.$.statusPending.setActive(true);
+    }
+    if (ja.status == "Considered") {
+      this.$.statusConsidered.setActive(true);
+    }
+    if (ja.status == "Accepted") {
+      this.$.statusAccepted.setActive(true);
+    }
+    if (ja.status == "Rejected") {
+      this.$.statusRejected.setActive(true);
+    }
+  },
+  updateApplication: function() {
+    var jaReqObj = "";
+    jaReqObj += "&appid=" + this.appId;
+    
+    if (this.$.inputJobApplicantNotes.getValue().length > 0 ) {
+      jaReqObj += "&notes=" + this.$.inputJobApplicantNotes.getValue();
+    }
+    if (this.$.statusPending.getActive()) {
+       jaReqObj += "&status=Pending";
+    }
+    if (this.$.statusConsidered.getActive()) {
+       jaReqObj += "&status=Considered";
+    }
+    if (this.$.statusAccepted.getActive()) {
+       jaReqObj += "&status=Accepted";
+    }
+    if (this.$.statusRejected.getActive()) {
+       jaReqObj += "&status=Rejected";
+    }
+    
+    
+    var req = new enyo.Ajax({url: "/api/job/edit/application", method: "POST", postBody: jaReqObj, sync: true});
+    req.response(enyo.bind(this, "processUpdateApplication"));
+    req.go();
+  },
+  processUpdateApplication: function(inRequest, inResponse) {
+    console.log(inResponse);
   }
 });
+
 
 enyo.kind({
   name: "JobApplicationsList",
@@ -399,16 +536,19 @@ enyo.kind({
   published: {
     jobId: undefined,
   },
+  events: {
+    onOpenJobApplication: ""
+  },
   results: [],
   components: [
-    {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
+    {kind: "onyx.Item", classes: "search-result-entry", ontap: "jobApplicationClick", components: [
       {name: "jobApplicantName"},
       {name: "jobApplicantEmail"},
       {name: "jobApplicantPhone"},
-      {name: "jobApplicantAdditional"},
-      {name: "jobApplicantNotes"},
+      {name: "jobApplicantAdditional", classes: "wrap"},
+      {name: "jobApplicantNotes", classes: "wrap"},
       {name: "jobApplicantStatus"},
-    ]}
+    ]},
   ],
   handlers: {
     onSetupItem: "setupItem", 
@@ -418,6 +558,11 @@ enyo.kind({
   },
   destroy: function() {
     this.inherited(arguments);
+  },
+  jobApplicationClick: function(inSender, inEvent) {
+    var result = this.results[inEvent.index];
+    inEvent.appId = result.OwnerViewJobApplication.uuid
+    this.bubble("onOpenJobApplication", inEvent, inSender);
   },
   refreshItems: function() {
     var req = new enyo.Ajax({url: "/api/job/view/applications", method: "GET", sync: true});

@@ -26,6 +26,17 @@
   color: #2e3192;
 }
 
+.search-result-entry .job-title {
+  display: inline-block;
+  width: 90%;
+}
+
+.search-result-entry .job-distance {
+  display: inline-block; 
+  width: 10%; 
+  text-align: right
+}
+
 .search-result-list {
   width: 25%;
 }

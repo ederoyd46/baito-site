@@ -613,7 +613,8 @@ enyo.kind({
   endOfResults: false,
   components: [
     {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", onhold: "itemLongPress", components: [
-      {name: "jobTitle", tag: "span"}
+      {name: "jobTitle", classes: "job-title"},
+      {name: "jobDistance", classes: "job-distance"}
     ]}
   ],
   create: function() {
@@ -691,8 +692,8 @@ enyo.kind({
   setupItem: function(inSender, inEvent) {
     var i = inEvent.index;
     var item = this.results[i];
-    var entry = item.job.JobSummary.title + " (" + item.distance + " miles away)";
-    this.$.jobTitle.setContent(entry);
+    this.$.jobTitle.setContent(item.job.JobSummary.title);
+    this.$.jobDistance.setContent(item.distance);
   },
   itemClicked: function(inSender, inEvent) {
     this.bubble("onJobClicked", inEvent, inSender);

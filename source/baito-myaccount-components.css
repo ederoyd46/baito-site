@@ -22,8 +22,8 @@
 .welcome-item { 
     display: inline-block;
     margin-right: 10px;
+    color: black;
 }
-
 
 .register-input-decorator {
     display: block;

@@ -19,7 +19,11 @@ enyo.kind({
       {kind: "ActionMenu", name: "actionMenu", classes: "baito-toolbar-actions", onMenuActionPerformed: "refreshSpacer", onMyAccount: "switchToMyAccount", onLogout: "switchToHomePage", onCreateJob: "createJob"},
     ]},
     {kind: "Panels", name: "pageContentPanels", draggable:false, animate: true, fit: true, components: [
-      {content: "Introduction to baito"},
+      {name: "steps", classes: "steps", components: [
+        {name: "step1", classes: "step1"},
+        {name: "step2", classes: "step2"},
+        {name: "step3", classes: "step3"},
+      ]},
       {kind: "FittableColumns", fit: true, components: [
         {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onAdditionSearchCompleted: "additionLoadMaps", onJobClicked: "resultsListClick", onJobLongPress: "resultsListLongPress", onNoResultsFound: "noSearchResultsFound"},
         {kind: "Panels", name: "contentPanels", draggable:false, animate: true, fit: true, components: [

@@ -28,6 +28,37 @@
 .onyx-groupbox > * {
   border-style: none;
 }
+.steps {
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.step1 {
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  margin-right: 10px;
+  background-image: url("../assets/step1.png");
+  background-repeat: no-repeat;
+}
+
+.step2 {
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  margin-right: 10px;
+  background-image: url("../assets/step2.png");
+  background-repeat: no-repeat;
+}
+
+.step3 {
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  background-image: url("../assets/step3.png");
+  background-repeat: no-repeat;
+}
 
 .baito-toolbar {
   background: transparent;

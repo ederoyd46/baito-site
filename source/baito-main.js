@@ -9,18 +9,16 @@ enyo.kind({
   JOB_DETAILS: 1,
   components: [
     {kind: "onyx.MoreToolbar", classes: "baito-toolbar", layoutKind: "FittableColumnsLayout", components: [
-      // {kind: "enyo.Image", src: "/assets/b-logo.jpg", style: "display: block;"},
       // {kind: "onyx.Button", content: "Go", onclick: "search"},
       // { name: "menuSpacerLeft", fit: true },
       {classes: "baito-toolbar-logo"},
       {classes: "search-input-container", components: [
         {kind: "onyx.InputDecorator", classes: "search-input-decorator", components: [
           {kind: "onyx.Input", name: "searchInput", classes: "search-input", placeholder: "Search for jobs in...(e.g. 'Penzance' or 'TR18 2NF')", onkeypress: "inputChange"},
-          {kind: "Image", src: "/assets/search-input-search.png", style: "width: 20px; height: 20px;"}
+          {kind: "Image", src: "/assets/search-input-search.png", style: "width: 20px; height: 20px;", onclick: "search"}
         ]},
-      ]}
-      // { name: "menuSpacerRight", fit: true },
-      // {kind: "ActionMenu", name: "actionMenu", onMenuActionPerformed: "refreshSpacer", onMyAccount: "switchToMyAccount", onLogout: "switchToHomePage", onCreateJob: "createJob"},
+      ]},
+      {kind: "ActionMenu", name: "actionMenu", classes: "baito-toolbar-actions", onMenuActionPerformed: "refreshSpacer", onMyAccount: "switchToMyAccount", onLogout: "switchToHomePage", onCreateJob: "createJob"},
     ]},
     {kind: "Panels", name: "pageContentPanels", draggable:false, animate: true, fit: true, components: [
       {content: "Introduction to baito"},

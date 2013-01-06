@@ -30,6 +30,11 @@
   margin-right: auto;
 }
 
+.baito-toolbar-actions {
+  float: right;
+  margin-top: -170px;
+}
+
 .search-input-decorator {
   width: 500px;
 }

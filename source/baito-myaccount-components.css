@@ -42,6 +42,11 @@
 .register-dob-label {
   color: #B7B7B7;
   margin-left: 8px;
+  display: inline-block;
+  width: 158px;
+}
+.register-dob-decorator {
+  width: 60px;
 }
 
 .register-container {

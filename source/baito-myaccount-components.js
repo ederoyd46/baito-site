@@ -426,10 +426,17 @@ enyo.kind({
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
       {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "register-input", onkeypress: "inputChange"}
     ]},
-    {style: "height: 20px"}, //Spacer
     {components: [
       {content: "Date Of Birth", classes: "register-dob-label"},
-      {name: "registerDateOfBirth", kind: "germboy.DateScroller", minYear: 1900, rangeYears: 114},
+      {kind: "onyx.InputDecorator", classes: "register-dob-decorator", components: [
+        {name: "registerDay", kind: "onyx.Input", placeholder: "Day", onkeypress: "inputChange"}
+      ]},
+      {kind: "onyx.InputDecorator", classes: "register-dob-decorator", components: [
+        {name: "registerMonth", kind: "onyx.Input", placeholder: "Month", onkeypress: "inputChange"}
+      ]},
+      {kind: "onyx.InputDecorator", classes: "register-dob-decorator", components: [
+        {name: "registerYear", kind: "onyx.Input", placeholder: "Year", onkeypress: "inputChange"}
+      ]},
     ]},
     {kind: "onyx.Button", content: "Register", classes: "register-button", onclick: "register"}
   ],
@@ -459,8 +466,7 @@ enyo.kind({
   },
   register: function(inSender, inEvent) {
     this.$.registerErrors.destroyComponents();
-    var dob = this.$.registerDateOfBirth.getDateObj();
-    var dobStr = dob.getFullYear() + "-" + this.padDate((dob.getMonth()+1)) + "-" + this.padDate(dob.getDate());
+    var dobStr = this.$.registerYear.getValue() + "-" + this.padDate(this.$.registerMonth.getValue()) + "-" + this.padDate(this.$.registerDay.getValue());
     var userReqObj = "";
     if (this.$.registerUsername.getValue().length > 0) {
       userReqObj += "username=" + this.$.registerUsername.getValue();

@@ -15,6 +15,7 @@
   position: absolute;
   bottom: 0px;
   width: 100%;
+  border-left: 0px;
 }
 
 .search-result-entry {

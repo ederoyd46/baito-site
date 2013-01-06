@@ -22,7 +22,11 @@
 }
 
 .onyx-groupbox-header {
-  background-color: #33324D;
+  background-color: #5C5E9C;
+}
+
+.onyx-groupbox > * {
+  border-style: none;
 }
 
 .baito-toolbar {

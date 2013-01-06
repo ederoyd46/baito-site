@@ -418,6 +418,9 @@ enyo.kind({
       {name: "registerPassword", kind: "onyx.Input", placeholder: "Password", type: "password", classes: "register-input", onkeypress: "inputChange"}
     ]},
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
+      {name: "confirmPassword", kind: "onyx.Input", placeholder: "Confirm Password", type: "password", classes: "register-input", onkeypress: "inputChange"}
+    ]},
+    {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
       {name: "registerName", kind: "onyx.Input", placeholder: "Name", classes: "register-input", onkeypress: "inputChange"}
     ]},
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
@@ -466,6 +469,14 @@ enyo.kind({
   },
   register: function(inSender, inEvent) {
     this.$.registerErrors.destroyComponents();
+    //Validate Passwords Match
+    if (this.$.registerPassword.getValue() != this.$.confirmPassword.getValue()) {
+       var errorContainer = this.$.registerErrors.createComponent({tag: "ul"});
+       errorContainer.render();
+       errorContainer.createComponent({content: "Passwords must match", tag: "li", classes: "error"}).render();
+       return;
+    }
+    
     var dobStr = this.$.registerYear.getValue() + "-" + this.padDate(this.$.registerMonth.getValue()) + "-" + this.padDate(this.$.registerDay.getValue());
     var userReqObj = "";
     if (this.$.registerUsername.getValue().length > 0) {

@@ -8,7 +8,7 @@ enyo.kind({
   MAPS_VIEW: 0,
   JOB_DETAILS: 1,
   components: [
-    {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", components: [
+    {kind: "onyx.MoreToolbar", classes: "baito-toolbar", layoutKind: "FittableColumnsLayout", components: [
       {kind: "onyx.Button", content: "Go", onclick: "search"},
       {kind: "onyx.InputDecorator", components: [
         {kind: "onyx.Input", name: "searchInput", value: "Leeds", classes: "search-input", placeholder: "search for jobs in...", onkeypress: "inputChange"}

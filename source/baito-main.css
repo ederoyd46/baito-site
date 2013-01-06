@@ -1,4 +1,25 @@
-.search-input {
-    width: 200px;
+.onyx-toolbar .onyx-button {
+  background-color: #f9eee8;
+  color: black;
 }
 
+.onyx-toolbar .onyx-input-decorator .onyx-input {
+  color: black;
+}
+
+.onyx-groupbox-header {
+  background-color: #33324D;
+}
+
+.baito-toolbar {
+  background: transparent;
+  border-right: 0px;
+  border-top: 0px;
+  border-left: 0px;
+  border-bottom: 3px solid #a49f99;
+  height: 200px;
+}
+
+.search-input {
+  width: 200px;
+}

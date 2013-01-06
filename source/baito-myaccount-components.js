@@ -426,7 +426,11 @@ enyo.kind({
     {kind: "onyx.InputDecorator", classes: "register-input-decorator", components: [
       {name: "registerTelephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "register-input", onkeypress: "inputChange"}
     ]},
-    {name: "registerDateOfBirth", kind: "germboy.DateScroller", minYear: 1900, rangeYears: 114},
+    {style: "height: 20px"}, //Spacer
+    {components: [
+      {content: "Date Of Birth", classes: "register-dob-label"},
+      {name: "registerDateOfBirth", kind: "germboy.DateScroller", minYear: 1900, rangeYears: 114},
+    ]},
     {kind: "onyx.Button", content: "Register", classes: "register-button", onclick: "register"}
   ],
   setFocus: function(inSender, inEvent) {

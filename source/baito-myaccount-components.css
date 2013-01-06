@@ -39,6 +39,14 @@
   margin-top: 5px;
 }
 
+.register-dob-label {
+  color: #B7B7B7;
+  margin-left: 8px;
+}
+
+.register-container {
+  width: 400px;
+}
 .error {
   color: red;
 }

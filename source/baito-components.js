@@ -92,7 +92,10 @@ enyo.kind({
         {style: "height: 60px"} //Spacer
       ]},
       {name: "applicantsList", kind: "JobApplicationsList", onOpenJobApplication: "switchToJobApplicationView"},
-      {name: "applicationView", kind: "JobApplicationView"},      
+      {kind: "Scroller", touch: true, components: [
+        {name: "applicationView", kind: "JobApplicationView"},
+        {style: "height: 60px"} //Spacer
+      ]},
     ]},
     {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", classes: "job-toolbar", components: [
       {kind: "onyx.Button", content: "Back", onclick:"backButtonClick"},

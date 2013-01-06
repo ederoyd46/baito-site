@@ -22,7 +22,6 @@
   padding-top: 20px;
   padding-bottom: 20px;
   border-bottom: 1px solid #c0bcb9;
-  border-right: 1px solid #c0bcb9;
   color: #2e3192;
 }
 
@@ -39,10 +38,11 @@
 
 .search-result-list {
   width: 25%;
+  border-right: 1px solid #c0bcb9;
 }
 
 .onyx-highlight {
-  background-color: grey;
+  background-color: #C0BCB9;
 }
 
 .job-input {

@@ -1,56 +1,54 @@
 .info-popup-content-button {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .login-container {
-    padding: 10px;
+  padding: 10px;
 }
 
 .login-inputs {
-    margin-left: 5px;
-    margin-right: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .login-button {
-    float: right;
-    margin-right: 5px;
-    margin-top: 5px;
+  float: right;
+  margin-right: 5px;
+  margin-top: 5px;
 }
 .action-menu {
-    display: inline-block;
+  display: inline-block;
 }
+
 .welcome-item { 
-    display: inline-block;
-    margin-right: 10px;
-    color: black;
+  display: inline-block;
+  margin-right: 10px;
+  color: black;
 }
 
 .register-input-decorator {
-    display: block;
+  display: block;
 }
 .register-input {
-    width: 100%;
+  width: 100%;
 }
 
 .register-button {
-    float: right;
-    margin-right: 5px;
-    margin-top: 5px;
+  float: right;
+  margin-right: 5px;
+  margin-top: 5px;
 }
 
 .error {
-    color: red;
+  color: red;
 }
 
 .apply-container {
-    padding: 10px;
+  padding: 10px;
 }
 
 .apply-input {
-    width: 100%;
-}
-
-.favourites-result-list {
+  width: 100%;
 }
 
 .my-account-panels {

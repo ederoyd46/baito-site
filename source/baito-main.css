@@ -3,6 +3,20 @@
   color: black;
 }
 
+.onyx-popup {
+  color: black;
+  background-color: white;
+}
+
+.onyx-menu-item:hover {
+  background-color: #C0BCB9;
+}
+
+.onyx-toolbar {
+  background-color: white;
+  border-color: #A49F99;
+}
+
 .onyx-toolbar .onyx-input-decorator .onyx-input {
   color: black;
 }

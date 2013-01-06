@@ -28,12 +28,12 @@
 
 .search-result-entry .job-title {
   display: inline-block;
-  width: 90%;
+  width: 85%;
 }
 
 .search-result-entry .job-distance {
   display: inline-block; 
-  width: 10%; 
+  width: 15%; 
   text-align: right
 }
 

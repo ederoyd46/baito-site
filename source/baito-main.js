@@ -9,7 +9,7 @@ enyo.kind({
   JOB_DETAILS: 1,
   components: [
     {kind: "onyx.MoreToolbar", classes: "baito-toolbar", layoutKind: "FittableColumnsLayout", components: [
-      {classes: "baito-toolbar-logo"},
+      {classes: "baito-toolbar-logo", ontap: "switchToHomePage"},
       {classes: "search-input-container", components: [
         {kind: "onyx.InputDecorator", classes: "search-input-decorator", components: [
           {kind: "onyx.Input", name: "searchInput", classes: "search-input", placeholder: "Search for jobs in...(e.g. 'Penzance' or 'TR18 2NF')", onkeypress: "inputChange"},

@@ -346,7 +346,7 @@ enyo.kind({
         {name: "username", kind: "onyx.Input", placeholder: "Enter your username", onkeypress: "inputChange", defaultFocus: true}
       ]},
       {kind: "onyx.InputDecorator", classes: "login-inputs", components: [
-        {name: "password", kind: "onyx.Input", placeholder: "Enter your password", onkeypress: "inputChange"}
+        {name: "password", kind: "onyx.Input", placeholder: "Enter your password", onkeypress: "inputChange", type: "password"}
       ]},
       {tag:"br"},
       {classes: "login-button", components: [

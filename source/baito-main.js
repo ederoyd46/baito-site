@@ -20,9 +20,18 @@ enyo.kind({
     ]},
     {kind: "Panels", name: "pageContentPanels", draggable:false, animate: true, fit: true, components: [
       {name: "steps", classes: "steps", components: [
-        {name: "step1", classes: "step1"},
-        {name: "step2", classes: "step2"},
-        {name: "step3", classes: "step3"},
+        {name: "step1", classes: "step1", components: [
+          {classes: "step1-img"},
+          {classes: "step1-txt", content: "Registration is free, no cv required"}
+        ]},
+        {name: "step2", classes: "step2", components: [
+          {classes: "step2-img"},
+          {classes: "step2-txt", content: "Search for a variety of jobs in your area"}
+        ]},
+        {name: "step3", classes: "step3", components: [
+          {classes: "step3-img"},
+          {classes: "step3-txt", content: "Applying is quick and easy"}
+        ]},
       ]},
       {kind: "FittableColumns", fit: true, components: [
         {name: "resultList", rowsPerPage: 10000, touch: true, kind: "SearchList", classes: "search-result-list", onSearchCompleted: "loadMaps", onAdditionSearchCompleted: "additionLoadMaps", onJobClicked: "resultsListClick", onJobLongPress: "resultsListLongPress", onNoResultsFound: "noSearchResultsFound"},

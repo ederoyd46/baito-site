@@ -34,31 +34,44 @@
   margin-right: auto;
   text-align: center;
 }
-.step1 {
+.step1, .step2, .step3 {
+  width: 200px;
+  height: 300px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.step1, .step2 {
+  margin-right: 10px;
+}
+
+.step1-img, .step2-img, .step3-img {
   width: 200px;
   height: 200px;
-  display: inline-block;
-  margin-right: 10px;
-  background-image: url("../assets/step1.png");
+  display: block;
   background-repeat: no-repeat;
 }
 
-.step2 {
+.step1-txt, .step2-txt, .step3-txt {
+  margin-top: 10px;
+  color: #373563;
   width: 200px;
-  height: 200px;
-  display: inline-block;
-  margin-right: 10px;
-  background-image: url("../assets/step2.png");
-  background-repeat: no-repeat;
+  height: 100px;
+  display: block;
 }
 
-.step3 {
-  width: 200px;
-  height: 200px;
-  display: inline-block;
-  background-image: url("../assets/step3.png");
-  background-repeat: no-repeat;
+.step1-img {
+  background-image: url("../assets/step1.png");  
 }
+
+.step2-img {
+  background-image: url("../assets/step2.png");  
+}
+
+.step3-img {
+  background-image: url("../assets/step3.png");  
+}
+
 
 .baito-toolbar {
   background: transparent;

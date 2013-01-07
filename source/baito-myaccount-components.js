@@ -12,9 +12,9 @@ enyo.kind({
   JOB_DETAILS_VIEW: 4,
   JOB_APPLICANTS_VIEW: 5,
   components: [
-      {name: "myAccountOptionList", touch: true, onSetupItem: "setupItem", classes: "search-result-list", kind: "List", components: [
-        {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
-          {name: "myAccountOptionTitle", tag: "span"}
+      {name: "myAccountOptionList", touch: true, onSetupItem: "setupItem", classes: "search-result-list", ontap: "itemClicked", kind: "List", components: [
+        {kind: "onyx.Item", name: "listItem", tapHighlight: true, classes: "search-result-entry", components: [
+          {name: "myAccountOptionTitle"}
         ]}
       ]},
       {kind: "Panels", name: "myAccountPanels", classes: "my-account-panels", draggable:false, components: [
@@ -38,8 +38,9 @@ enyo.kind({
   },
   setupItem: function(inSender, inEvent) {
     var item = this.menuOptions[inEvent.index];
+		this.$.listItem.addRemoveClass("onyx-selected", inSender.isSelected(inEvent.index));
     var entry = item.name;
-    this.$.myAccountOptionTitle.setContent(entry);
+    this.$.myAccountOptionTitle.setContent(entry);    
   },
   itemClicked: function(inSender, inEvent) {
     if (this.FAVOURITES_OPTION == inEvent.index) {
@@ -240,7 +241,7 @@ enyo.kind({
   components: [
     {name: "welcomeItem", content: "", classes: "welcome-item"},
     {kind: "onyx.MenuDecorator", classes: "action-menu", components: [
-      {name: "menuActions", content: "Actions"},
+      {name: "menuActions", content: "Menu"},
       {kind: "onyx.Menu", components: [
           {name: "loginItem", content: "Login", ontap: "login"},
           {name: "myaccountItem", content: "My Account", ontap: "myAccountClick"},

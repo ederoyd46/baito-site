@@ -103,7 +103,9 @@ enyo.kind({
   results: [],
   components: [
     {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
-      {name: "myFavouriteTitle", tag: "span"}
+      {name: "myFavouriteTitle", classes: "favourite-result-title"},
+      {name: "myFavouriteWage", classes: "favourite-result-wage"},
+      {name: "myFavouriteHours", classes: "favourite-result-hours"}
     ]}
   ],
   handlers: {
@@ -134,8 +136,9 @@ enyo.kind({
   },
   setupItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
-    var entry = item.JobSummary.title;
-    this.$.myFavouriteTitle.setContent(entry);
+    this.$.myFavouriteTitle.setContent(item.JobSummary.title);
+    this.$.myFavouriteWage.setContent(item.JobSummary.wage + " per hour");
+    this.$.myFavouriteHours.setContent(item.JobSummary.hours + " hours");
   },
 });
 
@@ -146,7 +149,8 @@ enyo.kind({
   results: [],
   components: [
     {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
-      {name: "myApplicationTitle", tag: "span"}
+      {name: "myApplicationTitle", classes: "application-result-title"},
+      {name: "myApplicationStatus", classes: "application-result-status"},
     ]}
   ],
   handlers: {
@@ -174,8 +178,8 @@ enyo.kind({
   },
   setupItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
-    var entry = item.ViewJobApplication.jobTitle;
-    this.$.myApplicationTitle.setContent(entry);
+    this.$.myApplicationTitle.setContent(item.ViewJobApplication.jobTitle);
+    this.$.myApplicationStatus.setContent(item.ViewJobApplication.status);
   },
 });
 
@@ -189,8 +193,9 @@ enyo.kind({
   results: [],
   components: [
     {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", components: [
-      {name: "myCreatedTitle", tag: "span"},
-      // {name: "myCreatedApplicants", kind: "onyx.Button", onclick: "loadApplicants"}
+      {name: "myCreatedTitle", classes: "created-result-title"},
+      {name: "myCreatedWage", classes: "created-result-wage"},
+      {name: "myCreatedHours", classes: "created-result-hours"}
     ]}
   ],
   handlers: {
@@ -221,11 +226,11 @@ enyo.kind({
   },
   setupItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
-    var entry = item.JobSummary.title;
-    this.$.myCreatedTitle.setContent(entry);
+    this.$.myCreatedTitle.setContent(item.JobSummary.title);
+    this.$.myCreatedWage.setContent(item.JobSummary.wage + " per hour");
+    this.$.myCreatedHours.setContent(item.JobSummary.hours + " hours");
   },
   loadApplicants: function(inSender, inEvent) {
-    console.log("here");
   }
 });
 

@@ -68,3 +68,34 @@
   height: 100%;
   width: 75%;
 }
+
+.favourite-result-title {
+  width: 80%;
+  display: inline-block;
+}
+
+.favourite-result-wage, .favourite-result-hours {
+  width: 10%;
+  display: inline-block;
+}
+
+.created-result-title {
+  width: 80%;
+  display: inline-block;
+}
+
+.created-result-wage, .created-result-hours {
+  width: 10%;
+  display: inline-block;
+}
+
+.application-result-title {
+  width: 60%;
+  display: inline-block;
+}
+
+.application-result-status {
+  width: 40%;
+  display: inline-block;
+}
+

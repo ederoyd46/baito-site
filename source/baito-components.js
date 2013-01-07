@@ -609,13 +609,15 @@ enyo.kind({
   },
   handlers: {
     onScroll: "scrolling",
-    onSetupItem: "setupItem",    
+    onSetupItem: "setupItem",
+    ontap: "itemClicked",
+    onhold: "itemLongPress",
   },
   searchText: "",
   searchInProgress: false,
   endOfResults: false,
   components: [
-    {kind: "onyx.Item", tapHighlight: true, classes: "search-result-entry", ontap: "itemClicked", onhold: "itemLongPress", components: [
+    {kind: "onyx.Item", name: "listItem", tapHighlight: true, classes: "search-result-entry", components: [
       {name: "jobTitle", classes: "job-title"},
       {name: "jobDistance", classes: "job-distance"}
     ]}
@@ -695,8 +697,10 @@ enyo.kind({
   setupItem: function(inSender, inEvent) {
     var i = inEvent.index;
     var item = this.results[i];
+    this.$.listItem.addRemoveClass("onyx-selected", false);
     this.$.jobTitle.setContent(item.job.JobSummary.title);
     this.$.jobDistance.setContent(item.distance);
+    return true;
   },
   itemClicked: function(inSender, inEvent) {
     this.bubble("onJobClicked", inEvent, inSender);

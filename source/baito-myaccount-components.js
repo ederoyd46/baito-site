@@ -38,7 +38,7 @@ enyo.kind({
   },
   setupItem: function(inSender, inEvent) {
     var item = this.menuOptions[inEvent.index];
-		this.$.listItem.addRemoveClass("onyx-selected", inSender.isSelected(inEvent.index));
+    this.$.listItem.addRemoveClass("onyx-selected", inSender.isSelected(inEvent.index));
     var entry = item.name;
     this.$.myAccountOptionTitle.setContent(entry);    
   },

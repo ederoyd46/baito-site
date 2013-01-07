@@ -28,6 +28,15 @@
 .onyx-groupbox > * {
   border-style: none;
 }
+
+.onyx-selected {
+  background-color: #5C5E9C;
+}
+
+.onyx-selected > * {
+  color: white;
+}
+
 .steps {
   margin-top: 50px;
   margin-left: auto;

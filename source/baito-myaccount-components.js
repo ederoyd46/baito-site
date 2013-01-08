@@ -283,7 +283,7 @@ enyo.kind({
       this.$.myaccountItem.show();
       this.$.createJobItem.show();
       this.$.logoutItem.show();
-      this.$.welcomeItem.setContent(inResponse.UserResponse.user.name)
+      this.$.welcomeItem.setContent(inResponse.UserResponse.user.User.name)
       this.$.welcomeItem.show();
     } else {
       this.$.loginItem.show();
@@ -400,7 +400,7 @@ enyo.kind({
     }
     
     enyo.Signals.send("onAuthenticationChange");
-    this.doLoginComplete({name: inResponse.UserResponse.user.name});
+    this.doLoginComplete({name: inResponse.UserResponse.user.User.name});
   }
 });
 
@@ -701,7 +701,7 @@ enyo.kind({
   },
   processPrepopulateUser: function(inRequest, inResponse) {
     if (inResponse.UserResponse.success) {
-      var user = inResponse.UserResponse.user;
+      var user = inResponse.UserResponse.user.User;
       this.$.applyName.setValue(user.name);
       this.$.applyEmail.setValue(user.email);
       this.$.applyTelephone.setValue(user.phone);

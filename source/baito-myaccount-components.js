@@ -8,9 +8,8 @@ enyo.kind({
   CREATED_OPTION: 2,
   CREATED_VIEW: 3,
   MYDETAILS_OPTION: 3,
-  MYDETAILS_VIEW: 4,
+  MYDETAILS_VIEW: 5,
   JOB_DETAILS_VIEW: 4,
-  JOB_APPLICANTS_VIEW: 5,
   components: [
       {name: "myAccountOptionList", touch: true, onSetupItem: "setupItem", classes: "search-result-list", ontap: "itemClicked", kind: "List", components: [
         {kind: "onyx.Item", name: "listItem", tapHighlight: true, classes: "search-result-entry", components: [
@@ -23,6 +22,7 @@ enyo.kind({
         {name: "applicationsList", kind: "UserApplicationsList", touch: true},
         {name: "createdList", kind: "CreatedList", touch: true, onCreatedClicked: "openCreatedJobItem"},
         {name: "jobDetails", kind: "JobDetails"},
+        {name: "personalDetails", kind: "PersonalDetailsContainer"}
       ]},
   ],
   create: function() {
@@ -54,7 +54,16 @@ enyo.kind({
     if (this.CREATED_OPTION == inEvent.index) {
       this.openCreatedList();
     }
+    
+    if (this.MYDETAILS_OPTION == inEvent.index) {
+      this.openMyDetails();
+    }
+    
     return true;
+  },
+  openMyDetails: function() {
+    this.$.personalDetails.refreshDetails();
+    this.$.myAccountPanels.setIndex(this.MYDETAILS_VIEW);
   },
   openFavouritesList: function() {
     this.$.favouritesList.refreshItems();
@@ -404,7 +413,6 @@ enyo.kind({
   }
 });
 
-
 enyo.kind({
   name: "RegisterContainer",
   kind: "onyx.Popup",
@@ -655,9 +663,6 @@ enyo.kind({
   }
 });
 
-
-
-
 enyo.kind({
   name: "ApplyContainer",
   kind: "onyx.Popup",
@@ -754,3 +759,99 @@ enyo.kind({
     this.doApplyComplete();
   }
 });
+
+
+enyo.kind({
+  name: "PersonalDetailsContainer",
+  kind: "Control",
+  classes: "personal-details-container",
+  events: {
+  },
+  handlers: {
+  },
+  components: [
+    {kind: "Scroller", touch: true, classes: "personal-details-container", horizontal: "hidden", components: [
+      {name: "registerErrors", classes: "errors"},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Password"},
+        {kind: "onyx.InputDecorator", classes: "personal-details-input-decorator", components: [
+          {name: "password", kind: "onyx.Input", placeholder: "Password", type: "password", classes: "personal-details-input", onkeypress: "inputChange"}
+        ]},
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Confirm Password"},
+        {kind: "onyx.InputDecorator", classes: "personal-details-input-decorator", components: [
+          {name: "confirmPassword", kind: "onyx.Input", placeholder: "Confirm Password", type: "password", classes: "personal-details-input", onkeypress: "inputChange"}
+        ]},
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Name"},
+        {kind: "onyx.InputDecorator", classes: "personal-details-input-decorator", components: [
+          {name: "name", kind: "onyx.Input", placeholder: "Name", classes: "personal-details-input", onkeypress: "inputChange"}
+        ]},
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Email"},
+        {kind: "onyx.InputDecorator", classes: "personal-details-input-decorator", components: [
+          {name: "email", kind: "onyx.Input", placeholder: "Email", type: "email", classes: "personal-details-input", onkeypress: "inputChange"}
+        ]},
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Phone Number"},
+        {kind: "onyx.InputDecorator", classes: "personal-details-input-decorator", components: [
+          {name: "telephone", kind: "onyx.Input", placeholder: "Phone Number", classes: "personal-details-input", onkeypress: "inputChange"}
+        ]},
+      ]},
+      {kind: "onyx.Groupbox", components: [
+        {kind: "onyx.GroupboxHeader", content: "Date of Birth", classes: "personal-details-dob"},
+        {components: [
+          {kind: "onyx.InputDecorator", classes: "personal-details-dob-decorator", components: [
+            {name: "day", kind: "onyx.Input", placeholder: "Day", onkeypress: "inputChange", classes: "personal-details-dob-input"}
+          ]},
+          {kind: "onyx.InputDecorator", classes: "personal-details-dob-decorator", components: [
+            {name: "month", kind: "onyx.Input", placeholder: "Month", onkeypress: "inputChange", classes: "personal-details-dob-input"}
+          ]},
+          {kind: "onyx.InputDecorator", classes: "personal-details-dob-decorator", components: [
+            {name: "year", kind: "onyx.Input", placeholder: "Year", onkeypress: "inputChange", classes: "personal-details-dob-input"}
+          ]},
+        ]},
+      ]},
+    ]},
+    {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", classes: "bottom-toolbar", components: [
+      {kind: "onyx.Button", content: "Save", onclick:"saveButtonClick"},
+    ]},
+  ],
+  create: function() {
+    this.inherited(arguments);
+  },
+  destroy: function() {
+    this.inherited(arguments);
+  },
+  saveButtonClick: function(inSender, inEvent) {
+    console.log("save button clicked");
+  },
+  refreshDetails: function() {
+    var req = new enyo.Ajax({url: "/api/user/whoami", method: "GET"});
+    req.response(enyo.bind(this, "processRefreshDetails"));
+    req.go();
+  },
+  processRefreshDetails: function(inRequest, inResponse) {
+    if (!inResponse.UserResponse.success) {
+      enyo.Signals.send("onAuthenticationChange");
+      return;
+    }
+    var usr = inResponse.UserResponse.user.User;
+    this.$.name.setValue(usr.name);
+    this.$.email.setValue(usr.email);
+    this.$.telephone.setValue(usr.phone);
+    
+    var birthDate = usr.birthDate.match(/([0-9]+)-([0-9]+)-([0-9]+)/);
+    this.$.year.setValue(birthDate[1]);
+    this.$.month.setValue(birthDate[2]);
+    this.$.day.setValue(birthDate[3]);
+  }
+});
+
+
+
+

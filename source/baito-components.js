@@ -18,7 +18,7 @@ enyo.kind({
   longitude: undefined,
   components: [
     {kind: "Panels", name: "jobDetailsContentPanels", style: "height: 100%", draggable: false, animate: true, fit: true, components: [
-      {name: "jobContainer", kind: "Scroller", touch: true, classes: "job-container", components: [
+      {name: "jobContainer", kind: "Scroller", touch: true, classes: "job-container", horizontal: "hidden", components: [
         {kind: "onyx.Groupbox", components: [
           {kind: "onyx.GroupboxHeader", content: "Title"},
           {name: "title", style: "padding: 8px;"},
@@ -97,7 +97,7 @@ enyo.kind({
         {style: "height: 60px"} //Spacer
       ]},
     ]},
-    {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", classes: "job-toolbar", components: [
+    {kind: "onyx.MoreToolbar", layoutKind: "FittableColumnsLayout", classes: "bottom-toolbar", components: [
       {kind: "onyx.Button", content: "Back", onclick:"backButtonClick"},
       {kind: "FavouriteButton", name: "favourite"},
       {kind: "ApplyButton", name: "apply"},

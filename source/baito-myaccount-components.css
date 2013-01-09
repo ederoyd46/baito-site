@@ -70,22 +70,24 @@
 }
 
 .favourite-result-title {
-  width: 80%;
+  width: 70%;
   display: inline-block;
 }
 
 .favourite-result-wage, .favourite-result-hours {
-  width: 10%;
+  width: 15%;
+  text-align: right;
   display: inline-block;
 }
 
 .created-result-title {
-  width: 80%;
+  width: 70%;
   display: inline-block;
 }
 
 .created-result-wage, .created-result-hours {
-  width: 10%;
+  width: 15%;
+  text-align: right;
   display: inline-block;
 }
 
@@ -96,6 +98,24 @@
 
 .application-result-status {
   width: 40%;
+  text-align: right;
   display: inline-block;
 }
 
+
+.personal-details-input-decorator, .personal-details-input {
+  width: 100%;
+}
+
+.personal-details-dob-decorator {
+  display: inline-block !important;
+  width: 60px;
+}
+
+.personal-details-dob-input {
+  width: 100%;
+}
+
+.personal-details-container {
+  height: 100%;
+}

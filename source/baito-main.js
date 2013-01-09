@@ -9,6 +9,7 @@ enyo.kind({
   JOB_DETAILS: 1,
   components: [
     {kind: "onyx.MoreToolbar", classes: "baito-toolbar", layoutKind: "FittableColumnsLayout", components: [
+      {content: "BETA VERSION", style: "float: left;color: black; margin:0px"},
       {classes: "baito-toolbar-logo", ontap: "switchToHomePage"},
       {classes: "search-input-container", components: [
         {kind: "onyx.InputDecorator", classes: "search-input-decorator", components: [

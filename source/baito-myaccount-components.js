@@ -771,7 +771,7 @@ enyo.kind({
   },
   components: [
     {kind: "Scroller", touch: true, classes: "personal-details-container", horizontal: "hidden", components: [
-      {name: "registerErrors", classes: "errors"},
+      {name: "errors", classes: "errors"},
       {kind: "onyx.Groupbox", components: [
         {kind: "onyx.GroupboxHeader", content: "Password"},
         {kind: "onyx.InputDecorator", classes: "personal-details-input-decorator", components: [
@@ -828,7 +828,55 @@ enyo.kind({
     this.inherited(arguments);
   },
   saveButtonClick: function(inSender, inEvent) {
-    console.log("save button clicked");
+    this.$.errors.destroyComponents();
+    
+    //Validate Passwords Match
+    if (this.$.password.getValue() != this.$.confirmPassword.getValue()) {
+       var errorContainer = this.$.errors.createComponent({tag: "ul"});
+       errorContainer.render();
+       errorContainer.createComponent({content: "Passwords must match", tag: "li", classes: "error"}).render();
+       return;
+    }
+    
+    var dobStr = this.$.year.getValue() + "-" + this.padDate(this.$.month.getValue()) + "-" + this.padDate(this.$.day.getValue());
+    var userReqObj = "";
+    if (this.$.password.getValue().length > 0 ) {
+      userReqObj += "&password=" + Crypto.SHA256(this.$.password.getValue());
+    }
+    if (this.$.name.getValue().length > 0 ) {
+      userReqObj += "&name=" + this.$.name.getValue();
+    }
+    if (this.$.email.getValue().length > 0 ) {
+      userReqObj += "&email=" + this.$.email.getValue();
+    }
+    if (this.$.telephone.getValue().length > 0 ) {
+      userReqObj += "&phone=" + this.$.telephone.getValue();
+    }
+    
+    userReqObj += "&birthDate=" + dobStr;
+    var req = new enyo.Ajax({url: "/api/user/edit", method: "POST", postBody: userReqObj, sync: true});
+    req.response(enyo.bind(this, "processSaveButtonClick"));
+    req.go();
+    
+  },  
+  processSaveButtonClick: function(inRequest, inResponse) {
+    if (!inResponse.UserResponse.success) {
+      var errorContainer = this.$.errors.createComponent({tag: "ul"});
+      errorContainer.render();
+      var validationErrors = inResponse.UserResponse.errors;
+      validationErrors.forEach(function(e) {
+        errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
+      });
+    }
+    
+    console.log(inResponse);
+  },
+  padDate: function(value) {
+    if (value < 10) {
+      return "0" + value
+    } else {
+      return value;
+    }
   },
   refreshDetails: function() {
     var req = new enyo.Ajax({url: "/api/user/whoami", method: "GET"});
@@ -841,6 +889,8 @@ enyo.kind({
       return;
     }
     var usr = inResponse.UserResponse.user.User;
+    this.$.password.setValue("");
+    this.$.confirmPassword.setValue("");
     this.$.name.setValue(usr.name);
     this.$.email.setValue(usr.email);
     this.$.telephone.setValue(usr.phone);

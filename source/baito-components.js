@@ -106,6 +106,8 @@ enyo.kind({
       {kind: "ApplyButton", name: "apply"},
       {kind: "onyx.Button", name: "edit", content: "Edit", onclick: "editButtonClick"},
       {kind: "onyx.Button", name: "applicants", content: "Applicants", onclick: "applicantButtonClick"},
+      {kind: "onyx.Button", name: "saveApplication", content: "Save", onclick: "saveApplication"},
+      
     ]},
     {name: "jobPopup", kind: "onyx.Popup", style: "padding: 10px", floating: true, centered: true, scrim: true, scrimWhenModal: false, components:[
       {name: "jobErrors", classes: "errors"},
@@ -154,6 +156,7 @@ enyo.kind({
     this.$.jobDetailsContentPanels.setIndex(this.JOB_VIEW);
     this.$.edit.hide();
     this.$.applicants.hide();
+    this.$.saveApplication.hide();
     this.switchToViewMode();
     var req = new enyo.Ajax({url: "/api/job/view"});
     req.response(enyo.bind(this, "processLoadedJob"));
@@ -382,6 +385,7 @@ enyo.kind({
   backButtonClick: function(inSender, inEvent) {
     if (this.$.jobDetailsContentPanels.getIndex() == this.APPLICATION_VIEW) {
       this.$.jobDetailsContentPanels.setIndex(this.APPLICANTS_VIEW);
+      this.$.saveApplication.hide();
       return true;
     }
 
@@ -406,9 +410,13 @@ enyo.kind({
     this.$.favourite.hide();
     this.$.applicants.hide();
   },
+  saveApplication: function(inSender, inEvent) {
+    this.$.applicationView.updateApplication();
+  },
   switchToJobApplicationView: function(inSender, inEvent) {
     this.$.applicationView.setAppId(inEvent.appId);
     this.$.applicationView.refreshApplication();
+    this.$.saveApplication.show();
     this.$.jobDetailsContentPanels.setIndex(this.APPLICATION_VIEW);
   }  
 });
@@ -426,40 +434,38 @@ enyo.kind({
     onShow: "setFocus"
   },
   components: [
-      {name: "errors", classes: "errors"},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Name"},
-        {name: "jobApplicantName"},
+    {name: "errors", classes: "errors"},
+    {kind: "onyx.Groupbox", components: [
+      {kind: "onyx.GroupboxHeader", content: "Name"},
+      {name: "jobApplicantName"},
+    ]},
+    {kind: "onyx.Groupbox", components: [
+      {kind: "onyx.GroupboxHeader", content: "Email"},
+      {name: "jobApplicantEmail"},
+    ]},
+    {kind: "onyx.Groupbox", components: [
+      {kind: "onyx.GroupboxHeader", content: "Phone"},
+      {name: "jobApplicantPhone"},
+    ]},
+    {kind: "onyx.Groupbox", components: [
+      {kind: "onyx.GroupboxHeader", content: "Additional"},
+      {name: "jobApplicantAdditional", classes: "wrap"},
+    ]},
+    {name: "notesGroup", kind: "onyx.Groupbox", components: [
+      {kind: "onyx.GroupboxHeader", content: "Notes (Private)"},
+      {name: "jobApplicantNotes", kind: "onyx.InputDecorator", classes: "applicant-inputs", components: [
+        {name: "inputJobApplicantNotes", kind: "onyx.TextArea", placeholder: "Write some notes about the applicant...", classes: "applicant-large-input"}
       ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Email"},
-        {name: "jobApplicantEmail"},
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Phone"},
-        {name: "jobApplicantPhone"},
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Additional"},
-        {name: "jobApplicantAdditional", classes: "wrap"},
-      ]},
-      {name: "notesGroup", kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Notes (Private)"},
-        {name: "jobApplicantNotes", kind: "onyx.InputDecorator", classes: "applicant-inputs", components: [
-          {name: "inputJobApplicantNotes", kind: "onyx.TextArea", placeholder: "Write some notes about the applicant...", classes: "applicant-large-input"}
-        ]},
-      ]},
-      {kind: "onyx.Groupbox", components: [
-        {kind: "onyx.GroupboxHeader", content: "Status"},
-        {name: "jobApplicantStatus", kind: "onyx.RadioGroup", components: [
-            {name: "statusPending", content: "Pending"},
-            {name: "statusConsidered", content: "Considered"},
-            {name: "statusAccepted", content: "Accepted"},
-            {name: "statusRejected", content: "Rejected"},
-        ]},      
-      ]},
-      {kind: "onyx.Button", name: "save", content: "Save", onclick: "updateApplication"},
-      
+    ]},
+    {kind: "onyx.Groupbox", components: [
+      {kind: "onyx.GroupboxHeader", content: "Status"},
+      {name: "jobApplicantStatus", kind: "onyx.RadioGroup", components: [
+          {name: "statusPending", content: "Pending"},
+          {name: "statusConsidered", content: "Considered"},
+          {name: "statusAccepted", content: "Accepted"},
+          {name: "statusRejected", content: "Rejected"},
+      ]},      
+    ]},
   ],
   create: function() {
     this.inherited(arguments);
@@ -529,13 +535,19 @@ enyo.kind({
        jaReqObj += "&status=Rejected";
     }
     
-    
     var req = new enyo.Ajax({url: "/api/job/edit/application", method: "POST", postBody: jaReqObj, sync: true});
     req.response(enyo.bind(this, "processUpdateApplication"));
     req.go();
   },
   processUpdateApplication: function(inRequest, inResponse) {
-    console.log(inResponse);
+    if (!inResponse.JobApplicationResponse.success) {
+      var errorContainer = this.$.errors.createComponent({tag: "ul"});
+      errorContainer.render();
+      var validationErrors = inResponse.JobApplicationResponse.errors;
+      validationErrors.forEach(function(e) {
+        errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
+      });
+    }
   }
 });
 

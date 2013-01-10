@@ -866,8 +866,6 @@ enyo.kind({
         errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
       });
     }
-    
-    console.log(inResponse);
   },
   padDate: function(value) {
     if (value < 10) {

@@ -270,8 +270,6 @@ enyo.kind({
       if (results[i].JobSummary.uuid == this.jobId) {
         this.$.edit.show();
         this.$.applicants.show();
-        this.$.applicants.setContent("Applicants");
-        
         break;
       } else {
         this.$.edit.hide();
@@ -384,6 +382,7 @@ enyo.kind({
   },
   backButtonClick: function(inSender, inEvent) {
     if (this.$.jobDetailsContentPanels.getIndex() == this.APPLICATION_VIEW) {
+      this.$.applicantsList.refreshItems();
       this.$.jobDetailsContentPanels.setIndex(this.APPLICANTS_VIEW);
       this.$.saveApplication.hide();
       return true;
@@ -570,8 +569,9 @@ enyo.kind({
       {name: "jobApplicantEmail"},
       {name: "jobApplicantPhone"},
       {name: "jobApplicantAdditional", classes: "wrap"},
-      {name: "jobApplicantNotes", classes: "wrap"},
-      {name: "jobApplicantStatus"},
+      {tag: "br"},
+      {name: "jobApplicantNotes", classes: "wrap", style: "color: red;"},
+      {name: "jobApplicantStatus", style: "color: red;"},
     ]},
   ],
   handlers: {

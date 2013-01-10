@@ -17,7 +17,7 @@ enyo.kind({
         ]}
       ]},
       {kind: "Panels", name: "myAccountPanels", classes: "my-account-panels", draggable:false, components: [
-        {content: "My Account"},
+        {content: ""},
         {name: "favouritesList", kind: "FavouritesList", touch: true, onFavouriteClicked: "openFavouriteJobItem"},
         {name: "applicationsList", kind: "UserApplicationsList", touch: true},
         {name: "createdList", kind: "CreatedList", touch: true, onCreatedClicked: "openCreatedJobItem"},
@@ -239,8 +239,6 @@ enyo.kind({
     this.$.myCreatedWage.setContent(item.JobSummary.wage + " per hour");
     this.$.myCreatedHours.setContent(item.JobSummary.hours + " hours");
   },
-  loadApplicants: function(inSender, inEvent) {
-  }
 });
 
 enyo.kind({

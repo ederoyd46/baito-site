@@ -1,6 +1,9 @@
 enyo.kind({
   name: "JobDetails",
   kind: "Control",
+  JOB_VIEW: 0,
+  APPLICANTS_VIEW: 1,
+  APPLICATION_VIEW: 2,
   published: {
       jobId: undefined,
   },
@@ -148,7 +151,7 @@ enyo.kind({
     this.switchToEditMode();
   },
   loadJob: function() {
-    this.$.jobDetailsContentPanels.setIndex(0);
+    this.$.jobDetailsContentPanels.setIndex(this.JOB_VIEW);
     this.$.edit.hide();
     this.$.applicants.hide();
     this.switchToViewMode();
@@ -377,30 +380,38 @@ enyo.kind({
     this.longitude = location.longitude;
   },
   backButtonClick: function(inSender, inEvent) {
+    if (this.$.jobDetailsContentPanels.getIndex() == this.APPLICATION_VIEW) {
+      console.log("going back to APPLICANT_VIEW");
+      this.$.jobDetailsContentPanels.setIndex(this.APPLICANTS_VIEW);
+      return true;
+    }
+
+    if (this.$.jobDetailsContentPanels.getIndex() == this.APPLICANTS_VIEW) {
+      console.log("going back to JOB_VIEW");
+      this.$.jobDetailsContentPanels.setIndex(this.JOB_VIEW);
+      this.$.apply.show();
+      this.$.edit.show();
+      this.$.favourite.show();
+      this.$.applicants.show();
+      return true;
+    }
+    
     this.bubble("onBack");
     return true;
   },
   applicantButtonClick: function(inSender, inEvent) {
-    if (this.$.jobDetailsContentPanels.getIndex() == 0) {
-      this.$.applicantsList.setJobId(this.jobId);
-      this.$.applicantsList.refreshItems();
-      this.$.jobDetailsContentPanels.setIndex(1);
-      this.$.apply.hide();
-      this.$.edit.hide();
-      this.$.favourite.hide();
-      this.$.applicants.setContent("Details");
-    } else {
-      this.$.jobDetailsContentPanels.setIndex(0);
-      this.$.apply.show();
-      this.$.edit.show();
-      this.$.favourite.show();
-      this.$.applicants.setContent("Applicants");
-    }
+    this.$.applicantsList.setJobId(this.jobId);
+    this.$.applicantsList.refreshItems();
+    this.$.jobDetailsContentPanels.setIndex(this.APPLICANTS_VIEW);
+    this.$.apply.hide();
+    this.$.edit.hide();
+    this.$.favourite.hide();
+    this.$.applicants.hide();
   },
   switchToJobApplicationView: function(inSender, inEvent) {
     this.$.applicationView.setAppId(inEvent.appId);
     this.$.applicationView.refreshApplication();
-    this.$.jobDetailsContentPanels.setIndex(2);
+    this.$.jobDetailsContentPanels.setIndex(this.APPLICATION_VIEW);
   }  
 });
 

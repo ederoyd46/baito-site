@@ -381,13 +381,11 @@ enyo.kind({
   },
   backButtonClick: function(inSender, inEvent) {
     if (this.$.jobDetailsContentPanels.getIndex() == this.APPLICATION_VIEW) {
-      console.log("going back to APPLICANT_VIEW");
       this.$.jobDetailsContentPanels.setIndex(this.APPLICANTS_VIEW);
       return true;
     }
 
     if (this.$.jobDetailsContentPanels.getIndex() == this.APPLICANTS_VIEW) {
-      console.log("going back to JOB_VIEW");
       this.$.jobDetailsContentPanels.setIndex(this.JOB_VIEW);
       this.$.apply.show();
       this.$.edit.show();

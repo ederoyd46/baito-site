@@ -5,9 +5,9 @@
 		<title>Baito Development Version</title>
 		<link rel="shortcut icon" href="assets/favicon.ico"/>
 		<!-- -->
+    <!-- <meta name="viewport" content="width=device-width"> -->
+    <!-- <meta name="viewport" content="width=800, minimum-scale=0.25, maximum-scale=0.25, initial-scale=0.25"/> -->
 		<meta http-equiv="Content-Type" content="text/html; charset=utf8"/>
-		<meta name="apple-mobile-web-app-capable" content="yes"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 		<!-- css -->
 		<link href="build/enyo.css" rel="stylesheet"/>
 		<link href="build/app.css" rel="stylesheet"/>
@@ -16,7 +16,7 @@
 		<script src="build/app.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAia-fIH2zR4MUPaufEk3aPDWobGJZz9cw&sensor=false"></script>    
 	</head>
-	<body class="enyo-unselectable">
+	<body class="enyo-unselectable" style="min-width: 800px; min-height: 600px; overflow-y: auto; overflow-x: auto;">
 		<script>
 			if (!window.App) {
 				alert('No application build found, redirecting to debug.html.');

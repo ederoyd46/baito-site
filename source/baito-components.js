@@ -164,19 +164,19 @@ enyo.kind({
   },
   processLoadedJob: function(inRequest, inResponse) {
     this.$.jobContainer.scrollToTop();
-    if (!inResponse.JobResponse) {
+    if (!inResponse) {
       console.log("Wrong object in response");
       this.doJobResponseError();
       return;
     }
     
-    if (!inResponse.JobResponse.success) {
+    if (!inResponse.success) {
       console.log("Job does not exist");
       this.doJobDoesNotExist();
       return;
     }
     
-    this.populateFields(inResponse.JobResponse.job.Job);
+    this.populateFields(inResponse.job);
   },
   populateFields: function(job) {
     this.$.title.setContent(job.title);
@@ -262,12 +262,12 @@ enyo.kind({
     req.go();
   },
   processLoadEditButton: function(inRequest, inResponse) {
-    if (!inResponse.JobsResponse.success) {
+    if (!inResponse.success) {
       return;
     }
-    var results = inResponse.JobsResponse.jobs;
+    var results = inResponse.jobs;
     for (i=0;i<results.length;i++) {
-      if (results[i].JobSummary.uuid == this.jobId) {
+      if (results[i].uuid == this.jobId) {
         this.$.edit.show();
         this.$.applicants.show();
         break;
@@ -348,17 +348,17 @@ enyo.kind({
     req.go();
   },
   processSaveJob: function(inRequest, inResponse) {
-    if (!inResponse.JobResponse.success) {
+    if (!inResponse.success) {
       this.$.jobErrors.destroyComponents();
       var errorContainer = this.$.jobErrors.createComponent({tag: "ul"}).render();
-      var validationErrors = inResponse.JobResponse.errors;
+      var validationErrors = inResponse.errors;
       validationErrors.forEach(function(e) {
         errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
       });
       this.$.jobPopup.show();      
     }
     
-    this.populateFields(inResponse.JobResponse.job.Job);
+    this.populateFields(inResponse.job);
   },
   validatePostCode: function(inSender, inEvent) {
     var req = new enyo.Ajax({url: "/api/location/geolocationcode", method: "GET", sync: true});
@@ -366,17 +366,17 @@ enyo.kind({
     req.go({searchTerm: this.$.inputPostCode.getValue()});
   },
   processValidatePostCode: function(inRequest, inResponse) {
-    if (!inResponse.LocationResponse.success) {
+    if (!inResponse.success) {
       this.latitude = undefined;
       this.longitude = undefined;
       this.$.jobErrors.destroyComponents();
       var errorContainer = this.$.jobErrors.createComponent({tag: "ul"}).render();
-      errorContainer.createComponent({content: inResponse.LocationResponse.message, tag: "li", classes: "error"}).render();
+      errorContainer.createComponent({content: inResponse.message, tag: "li", classes: "error"}).render();
       this.$.jobPopup.show();
       return;
     }
     
-    var location = inResponse.LocationResponse.location;
+    var location = inResponse.location;
     this.latitude = location.latitude;
     this.longitude = location.longitude;
   },
@@ -479,20 +479,20 @@ enyo.kind({
   },
   processRefreshApplication: function(inRequest, inResponse) {
     var ja = undefined;
-    if (inResponse.JobApplicationResponse.jobApplication.ViewJobApplication) {
+    if (inResponse.jobApplication.ViewJobApplication) {
       this.$.notesGroup.hide();
       this.$.statusPending.setDisabled(true);
       this.$.statusConsidered.setDisabled(true);
       this.$.statusAccepted.setDisabled(true);
       this.$.statusRejected.setDisabled(true);
-      ja = inResponse.JobApplicationResponse.jobApplication.ViewJobApplication;
+      ja = inResponse.jobApplication;
     } else {
       this.$.notesGroup.show();
       this.$.statusPending.setDisabled(false);
       this.$.statusConsidered.setDisabled(false);
       this.$.statusAccepted.setDisabled(false);
       this.$.statusRejected.setDisabled(false);
-      ja = inResponse.JobApplicationResponse.jobApplication.OwnerViewJobApplication;
+      ja = inResponse.jobApplication;
     }
     this.$.jobApplicantName.setContent(ja.name);
     this.$.jobApplicantEmail.setContent(ja.email);
@@ -539,10 +539,10 @@ enyo.kind({
     req.go();
   },
   processUpdateApplication: function(inRequest, inResponse) {
-    if (!inResponse.JobApplicationResponse.success) {
+    if (!inResponse.success) {
       var errorContainer = this.$.errors.createComponent({tag: "ul"});
       errorContainer.render();
-      var validationErrors = inResponse.JobApplicationResponse.errors;
+      var validationErrors = inResponse.errors;
       validationErrors.forEach(function(e) {
         errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
       });
@@ -585,7 +585,7 @@ enyo.kind({
   },
   jobApplicationClick: function(inSender, inEvent) {
     var result = this.results[inEvent.index];
-    inEvent.appId = result.OwnerViewJobApplication.uuid
+    inEvent.appId = result.uuid
     this.bubble("onOpenJobApplication", inEvent, inSender);
   },
   refreshItems: function() {
@@ -594,22 +594,22 @@ enyo.kind({
     req.go({jobid: this.jobId});
   },
   processRefreshItems: function(inRequest, inResponse) {
-    if (!inResponse.JobApplicationsResponse.success) {
+    if (!inResponse.success) {
       enyo.Signals.send("onAuthenticationChange");
       return;
     }
-    this.results = inResponse.JobApplicationsResponse.jobApplications;
+    this.results = inResponse.jobApplications;
     this.setCount(this.results.length);
     this.reset();
   },
   setupItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
-    this.$.jobApplicantName.setContent(item.OwnerViewJobApplication.name);
-    this.$.jobApplicantEmail.setContent(item.OwnerViewJobApplication.email);
-    this.$.jobApplicantPhone.setContent(item.OwnerViewJobApplication.phone);
-    this.$.jobApplicantAdditional.setContent(item.OwnerViewJobApplication.additional);
-    this.$.jobApplicantNotes.setContent(item.OwnerViewJobApplication.notes);
-    this.$.jobApplicantStatus.setContent(item.OwnerViewJobApplication.status);
+    this.$.jobApplicantName.setContent(item.name);
+    this.$.jobApplicantEmail.setContent(item.email);
+    this.$.jobApplicantPhone.setContent(item.phone);
+    this.$.jobApplicantAdditional.setContent(item.additional);
+    this.$.jobApplicantNotes.setContent(item.notes);
+    this.$.jobApplicantStatus.setContent(item.status);
     return true;
   },
 });
@@ -664,12 +664,12 @@ enyo.kind({
   },
   processSearchResults: function(inRequest, inResponse) {
     this.lastSearchResponse = inResponse;
-    if (!inResponse.SearchResultsResponse.success) {
+    if (!inResponse.success) {
       this.doNoResultsFound();
       return;
     }
     
-    this.results = inResponse.SearchResultsResponse.results;
+    this.results = inResponse.results;
     
     if (this.results.length == 0) {
       this.doNoResultsFound();
@@ -693,13 +693,13 @@ enyo.kind({
   },
   processAdditionSearchResults: function(inRequest, inResponse) {
     this.lastSearchResponse = inResponse;
-    var resultCount = inResponse.SearchResultsResponse.results.length;
+    var resultCount = inResponse.results.length;
     if (resultCount == 0) {
       this.endOfResults = true;
       return;
     }
     
-    this.results.push.apply(this.results,inResponse.SearchResultsResponse.results);
+    this.results.push.apply(this.results,inResponse.results);
     this.setCount(this.results.length);
     this.refresh();
     this.searchInProgress = false;
@@ -719,7 +719,7 @@ enyo.kind({
     var i = inEvent.index;
     var item = this.results[i];
     this.$.listItem.addRemoveClass("onyx-selected", false);
-    this.$.jobTitle.setContent(item.job.JobSummary.title);
+    this.$.jobTitle.setContent(item.job.title);
     this.$.jobDistance.setContent(item.distance);
     return true;
   },
@@ -767,12 +767,12 @@ enyo.kind({
   loadMap: function(moveMap) {
     var data = this.mapData;
 
-    if (!data.SearchResultsResponse) {
+    if (!data) {
       console.log("Not expected response");
       return;
     }
 
-    var response = data.SearchResultsResponse;
+    var response = data;
     var mapLatLng = new google.maps.LatLng(response.searchLocation.latitude, response.searchLocation.longitude);
     if (!this.map) {
       if (this.$.mapview.hasNode()) {
@@ -797,7 +797,7 @@ enyo.kind({
     window.infowindow = !window.infowindow ? new google.maps.InfoWindow({content: "", size: new google.maps.Size(50,50)}) : infowindow;
     window.mapObject = this;
     results.forEach(function(r) {
-      var summary = r.job.JobSummary;
+      var summary = r.job;
       var point = new google.maps.LatLng(summary.location.latitude, summary.location.longitude);
       bounds.extend(point);
       if (!window.mapObject.isMarkerCreated(summary.uuid)) {

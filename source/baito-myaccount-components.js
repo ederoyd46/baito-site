@@ -71,7 +71,7 @@ enyo.kind({
   },
   openFavouriteJobItem: function(inSender, inEvent) {
     var item = this.$.favouritesList.results[inEvent.index];
-    var jobId = item.JobSummary.uuid;
+    var jobId = item.uuid;
 
     this.$.jobDetails.setJobId(jobId);
     this.$.jobDetails.loadJob();
@@ -88,7 +88,7 @@ enyo.kind({
   },
   openCreatedJobItem: function(inSender, inEvent) {
     var item = this.$.createdList.results[inEvent.index];
-    var jobId = item.JobSummary.uuid;
+    var jobId = item.uuid;
 
     this.$.jobDetails.setJobId(jobId);
     this.$.jobDetails.loadJob();
@@ -132,11 +132,11 @@ enyo.kind({
     req.go();
   },
   processRefreshItems: function(inRequest, inResponse) {
-    if (!inResponse.JobsResponse.success) {
+    if (!inResponse.success) {
       enyo.Signals.send("onAuthenticationChange");
       return;
     }
-    this.results = inResponse.JobsResponse.jobs;
+    this.results = inResponse.jobs;
     this.setCount(this.results.length);
     this.reset();
   },
@@ -145,9 +145,9 @@ enyo.kind({
   },
   setupItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
-    this.$.myFavouriteTitle.setContent(item.JobSummary.title);
-    this.$.myFavouriteWage.setContent(item.JobSummary.wage + " per hour");
-    this.$.myFavouriteHours.setContent(item.JobSummary.hours + " hours");
+    this.$.myFavouriteTitle.setContent(item.title);
+    this.$.myFavouriteWage.setContent(item.wage + " per hour");
+    this.$.myFavouriteHours.setContent(item.hours + " hours");
   },
 });
 
@@ -177,18 +177,18 @@ enyo.kind({
     req.go();
   },
   processRefreshItems: function(inRequest, inResponse) {
-    if (!inResponse.JobApplicationsResponse.success) {
+    if (!inResponse.success) {
       enyo.Signals.send("onAuthenticationChange");
       return;
     }
-    this.results = inResponse.JobApplicationsResponse.jobApplications;
+    this.results = inResponse.jobApplications;
     this.setCount(this.results.length);
     this.reset();
   },
   setupItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
-    this.$.myApplicationTitle.setContent(item.ViewJobApplication.jobTitle);
-    this.$.myApplicationStatus.setContent(item.ViewJobApplication.status);
+    this.$.myApplicationTitle.setContent(item.jobTitle);
+    this.$.myApplicationStatus.setContent(item.status);
   },
 });
 
@@ -222,11 +222,11 @@ enyo.kind({
     req.go();
   },
   processRefreshItems: function(inRequest, inResponse) {
-    if (!inResponse.JobsResponse.success) {
+    if (!inResponse.success) {
       enyo.Signals.send("onAuthenticationChange");
       return;
     }
-    this.results = inResponse.JobsResponse.jobs;
+    this.results = inResponse.jobs;
     this.setCount(this.results.length);
     this.reset();
   },
@@ -235,9 +235,9 @@ enyo.kind({
   },
   setupItem: function(inSender, inEvent) {
     var item = this.results[inEvent.index];
-    this.$.myCreatedTitle.setContent(item.JobSummary.title);
-    this.$.myCreatedWage.setContent(item.JobSummary.wage + " per hour");
-    this.$.myCreatedHours.setContent(item.JobSummary.hours + " hours");
+    this.$.myCreatedTitle.setContent(item.title);
+    this.$.myCreatedWage.setContent(item.wage + " per hour");
+    this.$.myCreatedHours.setContent(item.hours + " hours");
   },
 });
 
@@ -284,13 +284,13 @@ enyo.kind({
     req.go();
   },
   processRefreshMenuItems: function(inRequest, inResponse) {
-    if (inResponse.UserResponse.success) {
+    if (inResponse.success) {
       this.$.loginItem.hide();
       this.$.registerItem.hide();
       this.$.myaccountItem.show();
       this.$.createJobItem.show();
       this.$.logoutItem.show();
-      this.$.welcomeItem.setContent(inResponse.UserResponse.user.User.name)
+      this.$.welcomeItem.setContent(inResponse.user.name)
       this.$.welcomeItem.show();
     } else {
       this.$.loginItem.show();
@@ -396,10 +396,10 @@ enyo.kind({
     req.go();
   },
   processLoginUser: function(inRequest, inResponse) {
-    if (!inResponse.UserResponse.success) {
+    if (!inResponse.success) {
       var errorContainer = this.$.loginErrors.createComponent({tag: "ul"});
       errorContainer.render();
-      var validationErrors = inResponse.UserResponse.errors;
+      var validationErrors = inResponse.errors;
       validationErrors.forEach(function(e) {
         errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
       });
@@ -407,7 +407,7 @@ enyo.kind({
     }
     
     enyo.Signals.send("onAuthenticationChange");
-    this.doLoginComplete({name: inResponse.UserResponse.user.User.name});
+    this.doLoginComplete({name: inResponse.user.name});
   }
 });
 
@@ -514,10 +514,10 @@ enyo.kind({
     req.go();
   },
   processRegisterUser: function(inRequest, inResponse) {
-    if (!inResponse.UserResponse.success) {
+    if (!inResponse.success) {
       var errorContainer = this.$.registerErrors.createComponent({tag: "ul"});
       errorContainer.render();
-      var validationErrors = inResponse.UserResponse.errors;
+      var validationErrors = inResponse.errors;
       validationErrors.forEach(function(e) {
         errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
       });
@@ -555,7 +555,7 @@ enyo.kind({
     return true;
   },
   processToggleFavourite: function(inRequest, inResponse) {
-    if (inResponse.UserResponse.success) {
+    if (inResponse.success) {
       this.refreshContent();
     } else {
       enyo.Signals.send("onAuthenticationChange");
@@ -578,11 +578,11 @@ enyo.kind({
     req.go();
   },
   processRefreshContent: function(inRequest,inResponse) {
-    if (inResponse.JobsResponse.success) {
+    if (inResponse.success) {
       this.show();
-      for (i=0; i<inResponse.JobsResponse.jobs.length; i++) {
-        var job = inResponse.JobsResponse.jobs[i];
-        if (job.JobSummary.uuid == this.jobId) {
+      for (i=0; i<inResponse.jobs.length; i++) {
+        var job = inResponse.jobs[i];
+        if (job.uuid == this.jobId) {
           this.setContent("Un-favourite");
           return;
         }
@@ -645,11 +645,11 @@ enyo.kind({
     req.go();
   },
   processRefreshContent: function(inRequest,inResponse) {
-    if (inResponse.JobApplicationsResponse.success) {
+    if (inResponse.success) {
       this.show();
-      for (i=0; i<inResponse.JobApplicationsResponse.jobApplications.length; i++) {
-        var job = inResponse.JobApplicationsResponse.jobApplications[i];
-        if (job.ViewJobApplication.jobId == this.jobId) {
+      for (i=0; i<inResponse.jobApplications.length; i++) {
+        var job = inResponse.jobApplications[i];
+        if (job.jobId == this.jobId) {
           this.setDisabled(true);
           return;
         }
@@ -703,8 +703,8 @@ enyo.kind({
     req.go();
   },
   processPrepopulateUser: function(inRequest, inResponse) {
-    if (inResponse.UserResponse.success) {
-      var user = inResponse.UserResponse.user.User;
+    if (inResponse.success) {
+      var user = inResponse.user;
       this.$.applyName.setValue(user.name);
       this.$.applyEmail.setValue(user.email);
       this.$.applyTelephone.setValue(user.phone);
@@ -745,10 +745,10 @@ enyo.kind({
     req.go();
   },
   processApply: function(inRequest, inResponse) {
-    if (!inResponse.JobApplicationResponse.success) {
+    if (!inResponse.success) {
       var errorContainer = this.$.applyErrors.createComponent({tag: "ul"});
       errorContainer.render();
-      var validationErrors = inResponse.JobApplicationResponse.errors;
+      var validationErrors = inResponse.errors;
       validationErrors.forEach(function(e) {
         errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
       });
@@ -858,10 +858,10 @@ enyo.kind({
     
   },  
   processSaveButtonClick: function(inRequest, inResponse) {
-    if (!inResponse.UserResponse.success) {
+    if (!inResponse.success) {
       var errorContainer = this.$.errors.createComponent({tag: "ul"});
       errorContainer.render();
-      var validationErrors = inResponse.UserResponse.errors;
+      var validationErrors = inResponse.errors;
       validationErrors.forEach(function(e) {
         errorContainer.createComponent({content: e.message, tag: "li", classes: "error"}).render();
       });
@@ -880,11 +880,11 @@ enyo.kind({
     req.go();
   },
   processRefreshDetails: function(inRequest, inResponse) {
-    if (!inResponse.UserResponse.success) {
+    if (!inResponse.success) {
       enyo.Signals.send("onAuthenticationChange");
       return;
     }
-    var usr = inResponse.UserResponse.user.User;
+    var usr = inResponse.user;
     this.$.password.setValue("");
     this.$.confirmPassword.setValue("");
     this.$.name.setValue(usr.name);

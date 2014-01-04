@@ -85,7 +85,7 @@ enyo.kind({
   },
   resultsListClick: function(inSender, inEvent) {
     var item = this.$.resultList.results[inEvent.index];
-    var jobId = item.job.JobSummary.uuid;
+    var jobId = item.job.uuid;
     
     if (this.$.contentPanels.index == this.MAPS_VIEW) {
       this.$.mapContainer.panToJob(jobId);
@@ -99,7 +99,7 @@ enyo.kind({
   },
   resultsListLongPress: function(inSender, inEvent) {
     var item = this.$.resultList.results[inEvent.index];
-    var jobId = item.job.JobSummary.uuid;
+    var jobId = item.job.uuid;
 
     if (this.$.jobview.getJobId() != jobId) {
       this.$.jobview.setJobId(jobId);
